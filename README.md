@@ -29,16 +29,26 @@ npx skills add 0xlayerghost/solidity-agent-kit -y --agent cursor
 npx skills add 0xlayerghost/solidity-agent-kit -y --agent windsurf
 ```
 
-### Cleanup
+### After Install
 
-If you already installed for all agents but only need one, you can safely delete the folders you don't use:
+The CLI auto-detects all agents on your machine and creates folders for each (`.agents/`, `.claude/`, `.cursor/`, etc.). The `.agents/` folder holds the actual files; others are just **symlinks** (no extra disk space).
 
-```bash
-# Example: keep only .claude, remove the rest
-rm -rf .agents .cursor .trae .windsurf
+Add these to your project's `.gitignore` to keep your repo clean:
+
+```gitignore
+# Agent skills (installed locally, not committed)
+.agents/
+.claude/
+.cursor/
+.trae/
+.windsurf/
 ```
 
-Or keep only `.agents` (universal format) if your agent reads from there.
+### Uninstall
+
+```bash
+npx skills remove 0xlayerghost/solidity-agent-kit
+```
 
 ### Supported Agents
 
