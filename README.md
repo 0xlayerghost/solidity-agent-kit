@@ -6,11 +6,43 @@ A comprehensive agent skills toolkit for Solidity smart contract development wit
 
 ## Install
 
+### Quick Install (all agents)
+
 ```bash
-npx skills add 0xlayerghost/solidity-agent-kit
+npx skills add 0xlayerghost/solidity-agent-kit -y
 ```
 
-Works with **Claude Code**, **Cursor**, **GitHub Copilot**, **Aider**, and more.
+This auto-detects all AI agents on your machine and installs for each one. It may create multiple folders (`.agents/`, `.claude/`, `.cursor/`, `.windsurf/`, etc.) — this is normal. The `.agents/` folder holds the actual files; others are just symlinks.
+
+### Install for a Specific Agent
+
+If you only use one agent, specify it with `--agent`:
+
+```bash
+# Claude Code only
+npx skills add 0xlayerghost/solidity-agent-kit -y --agent claude-code
+
+# Cursor only
+npx skills add 0xlayerghost/solidity-agent-kit -y --agent cursor
+
+# Windsurf only
+npx skills add 0xlayerghost/solidity-agent-kit -y --agent windsurf
+```
+
+### Cleanup
+
+If you already installed for all agents but only need one, you can safely delete the folders you don't use:
+
+```bash
+# Example: keep only .claude, remove the rest
+rm -rf .agents .cursor .trae .windsurf
+```
+
+Or keep only `.agents` (universal format) if your agent reads from there.
+
+### Supported Agents
+
+Claude Code, Cursor, Windsurf, Trae, Codex, Gemini CLI, OpenCode, and more.
 
 ## Skills Included
 
