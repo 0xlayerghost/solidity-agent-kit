@@ -56,15 +56,15 @@ Claude Code, Cursor, Windsurf, Trae, Codex, Gemini CLI, OpenCode, and more.
 
 ## Skills Included
 
-| Skill | Description |
-|-------|-------------|
-| **solidity-coding** | Coding standards, naming conventions, project structure for Foundry |
-| **solidity-security** | Private key protection, gas control, security best practices |
-| **solidity-deploy** | Pre-deployment checks, deployment rules, post-deployment workflow |
-| **solidity-testing** | Test organization, coverage requirements, fuzz testing with Foundry |
-| **defi-security** | Anti-whale, anti-flash-loan, launch checklist, emergency response |
-| **git-workflow** | Conventional commits, PR requirements, code review for Solidity projects |
-| **claude-code-usage** | Context management, task strategies, prompt techniques |
+| Skill | Description | skills.sh |
+|-------|-------------|-----------|
+| **solidity-coding** | Coding standards, naming conventions, project structure for Foundry | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-coding) |
+| **solidity-security** | Private key protection, gas control, security best practices | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-security) |
+| **solidity-deploy** | Pre-deployment checks, deployment rules, post-deployment workflow | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-deploy) |
+| **solidity-testing** | Test organization, coverage requirements, fuzz testing with Foundry | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-testing) |
+| **defi-security** | Anti-whale, anti-flash-loan, launch checklist, emergency response | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/defi-security) |
+| **git-workflow** | Conventional commits, PR requirements, code review for Solidity projects | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/git-workflow) |
+| **claude-code-usage** | Context management, task strategies, prompt techniques | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/claude-code-usage) |
 
 ## Who Is This For
 
