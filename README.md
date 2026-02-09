@@ -9,6 +9,10 @@ A comprehensive agent skills toolkit for Solidity smart contract development wit
 ### Quick Install (all agents)
 
 ```bash
+# Interactive — choose which skills to install
+npx skills add 0xlayerghost/solidity-agent-kit
+
+# Install all 7 skills at once
 npx skills add 0xlayerghost/solidity-agent-kit -y
 ```
 
