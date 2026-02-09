@@ -1,14 +1,6 @@
 ---
 name: claude-code-usage
-description: Claude Code Best Practices - Context management, task strategies, prompt techniques for Solidity development
-author: 0xlayerghost
-version: 1.0.0
-triggers:
-  - "claude"
-  - "AI"
-  - "prompt"
-  - "/plan"
-  - "/clear"
+description: Optimize Claude Code usage for Solidity/Foundry development. Use when starting a coding session, managing context, planning tasks, or writing effective prompts — covers context management, task strategies, and Foundry-specific workflows.
 ---
 
 # Claude Code Best Practices
@@ -17,44 +9,65 @@ triggers:
 
 - **Always respond in the same language the user is using.** If the user asks in Chinese, respond in Chinese. If in English, respond in English.
 
-## Context Management
+## Context Management Rules
 
-- **One window, one task**: Don't switch between different features in the same conversation
-- **Don't compress**: When context is nearly full, use `/clear` to start fresh, re-describe key requirements
-- **Clean up promptly**: `/clear` immediately after completing complex tasks to avoid old context interfering
-- **Cross-window reference**: Copy and paste key information to new windows when needed
+| Rule | Why |
+|------|-----|
+| One window = one task | Mixing tasks pollutes context and degrades output quality |
+| Use `/clear` over `/compact` | Clean start is more reliable than compressed context |
+| `/clear` after complex tasks | Prevents old context from interfering with new work |
+| Copy key info to new windows | Don't rely on context persistence — paste critical details |
 
 ## Task Execution Strategy
 
-| Task Type | Approach |
-|-----------|----------|
-| Small bug fix (few lines) | Describe the requirement directly, let Claude modify |
-| Large feature/refactoring | `/plan` -> Confirm approach -> `/clear` -> Paste plan and execute |
-| Code analysis/learning | Let Claude analyze directly, no plan needed |
-| Multi-file changes | Must go through `/plan` workflow |
+| Task Type | Recommended Approach |
+|-----------|---------------------|
+| Small bug fix (few lines) | Describe directly, let Claude modify in-place |
+| Large feature / refactor | `/plan` → review approach → `/clear` → paste plan → execute step by step |
+| Multi-file changes | Must use `/plan` workflow — never modify multiple files without a plan |
+| Code analysis / learning | Ask Claude to analyze directly — no plan needed |
+| Debugging | Provide error message + file path + relevant code — ask for root cause |
 
 ## Prompt Techniques
 
-- **Give specific paths**: "Modify the `_transfer` function in `src/MyToken.sol`" (good)
-- **Avoid vague references**: "Modify that transfer function" (bad)
-- **Give examples**: Provide specific input/output examples when describing features
-- **Set boundaries**: "Only modify this function, don't touch other code"
-- **Limit output**: Say "keep it concise" or "show only key parts" if output is too long
+### Do This
+
+- Give specific paths: *"Modify the `_transfer` function in `src/MyToken.sol`"*
+- Give examples: *"Input: 100 tokens, Expected: 95 tokens after 5% fee"*
+- Set boundaries: *"Only modify this function, don't touch other code"*
+- Reference tests: *"The fix should make `test_transfer_feeDeduction` pass"*
+
+### Avoid This
+
+- Vague references: *"Modify that transfer function"* — which one? Where?
+- Open-ended requests without constraints: *"Make it better"*
+- Multiple unrelated tasks in one message
 
 ## Git Operation Rules
 
-- Run `git diff` before committing to review changes
-- Only commit, do not push unless explicitly requested
+- Always run `git diff` before committing to review changes
+- Only commit — do not push unless explicitly requested
+- Never push directly to main/master branch
+- Stage specific files — never use `git add .` in Solidity projects (risk of committing `.env`)
 
-## Common Commands
+## Foundry-Specific Workflow
 
-| Command | Usage |
-|---------|-------|
-| `/clear` | Clear context, start new task |
-| `/plan` | Enter planning mode, analyze without modifying code |
+| Action | Command |
+|--------|---------|
+| Before committing | `forge fmt && forge test` |
+| After modifying contracts | `forge build` to check compilation |
+| Before PR | `forge test --gas-report` to check gas impact |
+| Debugging failed test | `forge test --match-test <name> -vvvv` for full trace |
+
+## Quick Command Reference
+
+| Command | Purpose |
+|---------|---------|
+| `/clear` | Clear context, start fresh |
+| `/plan` | Enter planning mode — analyze before modifying |
 | `/help` | View all available commands |
-| `/compact` | Compress context (not recommended, prefer `/clear`) |
+| `/compact` | Compress context (prefer `/clear` instead) |
 
 ## Project-level Configuration
 
-Create `.claude/instructions.md` in the project root with project rules. Claude will automatically read it at the start of each conversation.
+Create `.claude/instructions.md` in the project root with project-specific rules. Claude automatically reads it at the start of every conversation — no manual loading needed.

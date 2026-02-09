@@ -1,20 +1,6 @@
 ---
 name: defi-security
-description: DeFi Security Principles - Protection mechanisms, launch checklist, emergency response (DeFi projects only)
-author: 0xlayerghost
-version: 1.0.0
-triggers:
-  - "DeFi"
-  - "liquidity"
-  - "LP"
-  - "swap"
-  - "staking"
-  - "dividend"
-  - "anti-whale"
-  - "reentrancy"
-  - "flash loan"
-globs:
-  - "src/**/*.sol"
+description: Enforce DeFi-specific security standards for Foundry projects. Use when building DEX, lending, staking, LP, or token contracts — covers anti-whale, anti-MEV, flash loan protection, launch checklists, and emergency response procedures. Only for DeFi projects.
 ---
 
 # DeFi Security Principles
@@ -23,29 +9,69 @@ globs:
 
 - **Always respond in the same language the user is using.** If the user asks in Chinese, respond in Chinese. If in English, respond in English.
 
-> Only applicable to DeFi projects. Non-DeFi projects can ignore this standard.
+> **Scope**: Only applicable to DeFi projects (DEX, lending, staking, LP, yield). Non-DeFi projects can ignore this skill.
 
-## Protection Mechanisms
+## Protection Decision Rules
 
-- **Anti-whale**: Daily amount caps + time window limits
-- **Anti-arbitrage**: EOA-only checks + referral binding + liquidity distribution + fixed yield + lock period
-- **Anti-reentrancy**: All contracts must use `ReentrancyGuard`
-- **Anti-overflow**: Solidity 0.8+ has built-in compiler checks
-- **Anti-flash loan**: Check `block.number` changes on critical operations or use TWA pricing
+| Threat | Required Protection |
+|--------|-------------------|
+| Whale manipulation | Daily transaction caps + per-tx amount limits + cooldown window |
+| MEV / sandwich attack | EOA-only checks (`msg.sender == tx.origin`), or use commit-reveal pattern |
+| Arbitrage | Referral binding + liquidity distribution + fixed yield model + lock period |
+| Reentrancy | `ReentrancyGuard` on all external-call functions (see solidity-security skill) |
+| Flash loan attack | Check `block.number` change between operations, or use TWAP pricing |
+| Price manipulation | Chainlink oracle or TWAP — never rely on spot AMM reserves for pricing |
+| Approval exploit | Use `safeIncreaseAllowance` / `safeDecreaseAllowance`, never raw `approve` for user flows |
+
+## Anti-Whale Implementation Rules
+
+- Maximum single transaction amount: configurable via `onlyOwner` setter
+- Daily cumulative limit per address: track with `mapping(address => mapping(uint256 => uint256))` (address → day → amount)
+- Cooldown between transactions: enforce minimum time gap with `block.timestamp` check
+- Whitelist for exempt addresses (deployer, LP pair, staking contract)
+
+## Flash Loan Protection Rules
+
+- For price-sensitive operations: require that `block.number` has changed since last interaction
+- For oracle-dependent calculations: use time-weighted average (TWAP) over minimum 30 minutes
+- For critical state changes: add minimum holding period before action (e.g., must hold tokens for N blocks)
 
 ## Launch Checklist
 
-- [ ] All `onlyOwner` functions transferred to multisig wallet
-- [ ] Timelock configured
-- [ ] Emergency pause switch tested (`Pausable`)
-- [ ] Daily limit parameters clearly documented
-- [ ] Third-party security audit passed (mandatory for mainnet)
-- [ ] Testnet running for at least 7 days
-- [ ] Critical parameters set reasonably (slippage, fees, lock period)
+Before mainnet deployment, verify all items:
 
-## Emergency Response
+- [ ] All `onlyOwner` functions transferred to multisig (e.g., Gnosis Safe)
+- [ ] Timelock contract deployed and configured (minimum 24h delay for critical changes)
+- [ ] `Pausable` emergency switch tested — both `pause()` and `unpause()` work correctly
+- [ ] Daily limit parameters documented and set to reasonable values
+- [ ] Third-party security audit completed and all critical/high findings resolved
+- [ ] Testnet deployment running for minimum 7 days with no issues
+- [ ] Slippage, fee, and lock period parameters reviewed and documented
+- [ ] Initial liquidity plan documented (amount, lock duration, LP token handling)
+- [ ] `forge test --fuzz-runs 10000` passes on all DeFi-critical functions
 
-- Define emergency pause procedure: who triggers it, how to trigger, how to recover after pause
-- Clearly designate technical lead and contact information
-- Prepare community announcement channels
-- Prepare fund recovery plan
+## Emergency Response Procedure
+
+| Step | Action |
+|------|--------|
+| 1. Detect | Monitor alerts trigger (on-chain monitoring, community reports) |
+| 2. Pause | Designated address calls `pause()` — must respond within minutes |
+| 3. Assess | Technical lead analyzes root cause, estimates fund impact |
+| 4. Communicate | Post incident notice to community channels (Discord, Twitter, Telegram) |
+| 5. Fix | Deploy fix or prepare recovery plan |
+| 6. Resume | Call `unpause()` after fix verified on fork — or migrate to new contract |
+| 7. Post-mortem | Publish detailed incident report within 48 hours |
+
+## DeFi Testing Commands
+
+```bash
+# Fuzz test fund flows with high iterations
+forge test --match-contract StakingTest --fuzz-runs 10000
+
+# Fork mainnet to test against real state
+forge test --fork-url $MAINNET_RPC -vvvv
+
+# Simulate whale transaction on fork
+cast send <CONTRACT> "stake(uint256)" 1000000000000000000000000 \
+  --rpc-url $FORK_RPC --private-key $TEST_KEY
+```
