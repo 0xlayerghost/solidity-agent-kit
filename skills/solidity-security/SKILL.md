@@ -1,6 +1,6 @@
 ---
 name: solidity-security
-description: Enforce smart contract security standards in Foundry projects. Use when writing, reviewing, or auditing Solidity contracts — covers private key handling, access control patterns, reentrancy prevention, gas safety, and pre-audit checklists.
+description: "[AUTO-INVOKE] MUST be invoked BEFORE writing or modifying any Solidity contract (.sol files). Covers private key handling, access control, reentrancy prevention, gas safety, and pre-audit checklists. Trigger: any task involving creating, editing, or reviewing .sol source files."
 ---
 
 # Solidity Security Standards

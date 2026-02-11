@@ -1,6 +1,6 @@
 ---
 name: claude-code-usage
-description: Optimize Claude Code usage for Solidity/Foundry development. Use when starting a coding session, managing context, planning tasks, or writing effective prompts — covers context management, task strategies, and Foundry-specific workflows.
+description: "[AUTO-INVOKE] MUST be invoked at the START of each new coding session. Covers context management, task strategies, and Foundry-specific workflows. Trigger: beginning of any new conversation or coding session in a Solidity/Foundry project."
 ---
 
 # Claude Code Best Practices

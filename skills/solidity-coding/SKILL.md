@@ -1,6 +1,6 @@
 ---
 name: solidity-coding
-description: Enforce Solidity coding standards for Foundry projects. Use when writing new contracts, reviewing code structure, or setting up project architecture — covers pragma version, naming conventions, project layout, and OpenZeppelin integration.
+description: "[AUTO-INVOKE] MUST be invoked BEFORE writing or modifying any Solidity contract (.sol files). Covers pragma version, naming conventions, project layout, and OpenZeppelin integration. Trigger: any task involving creating, editing, or reviewing .sol source files."
 ---
 
 # Solidity Coding Standards

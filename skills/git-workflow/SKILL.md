@@ -1,6 +1,6 @@
 ---
 name: git-workflow
-description: Enforce Git collaboration standards for Solidity/Foundry projects. Use when committing code, creating PRs, or reviewing changes — covers Conventional Commits, PR templates, review requirements, and AI-assisted development rules.
+description: "[AUTO-INVOKE] MUST be invoked BEFORE creating git commits, PRs, or code reviews. Covers Conventional Commits, PR templates, review requirements, and AI-assisted development rules. Trigger: any task involving git commit, git push, PR creation, or code review."
 ---
 
 # Git Collaboration Standards

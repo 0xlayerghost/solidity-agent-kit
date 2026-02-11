@@ -1,6 +1,6 @@
 ---
 name: solidity-testing
-description: Enforce Solidity testing standards with Foundry. Use when writing tests, reviewing test coverage, or running test suites — covers test file structure, naming conventions, coverage requirements, fuzz testing, and Foundry cheatcodes.
+description: "[AUTO-INVOKE] MUST be invoked BEFORE writing or modifying any test files (*.t.sol). Covers test structure, naming conventions, coverage requirements, fuzz testing, and Foundry cheatcodes. Trigger: any task involving creating, editing, or running Solidity tests."
 ---
 
 # Testing Standards

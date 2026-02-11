@@ -1,6 +1,6 @@
 ---
 name: solidity-deploy
-description: Guide smart contract deployment workflow with Foundry. Use when deploying contracts, running deployment scripts, or verifying contracts on block explorers — covers pre-flight checks, forge script commands, post-deployment validation, and verification.
+description: "[AUTO-INVOKE] MUST be invoked BEFORE deploying contracts or writing deployment scripts (*.s.sol). Covers pre-flight checks, forge script commands, post-deployment validation, and verification. Trigger: any task involving forge script, contract deployment, or block explorer verification."
 ---
 
 # Deployment Workflow
