@@ -35,6 +35,17 @@ npx skills add 0xlayerghost/solidity-agent-kit -y --agent windsurf
 
 ### After Install
 
+**Copy the `CLAUDE.md` template** to your project root so skills are auto-invoked:
+
+```bash
+# Download the template to your project root
+curl -sL https://raw.githubusercontent.com/0xlayerghost/solidity-agent-kit/main/CLAUDE.md.template -o CLAUDE.md
+```
+
+Or manually: copy [`CLAUDE.md.template`](./CLAUDE.md.template) to your project root and rename it to `CLAUDE.md`.
+
+> `CLAUDE.md` is loaded automatically at the start of every Claude Code conversation. It tells Claude **when** to invoke each skill — no manual `/slash-commands` needed.
+
 The CLI auto-detects all agents on your machine and creates folders for each (`.agents/`, `.claude/`, `.cursor/`, etc.). The `.agents/` folder holds the actual files; others are just **symlinks** (no extra disk space).
 
 Add these to your project's `.gitignore` to keep your repo clean:
@@ -86,6 +97,7 @@ Claude Code, Cursor, Windsurf, Trae, Codex, Gemini CLI, OpenCode, and more.
 
 ```
 solidity-agent-kit/
+├── CLAUDE.md.template          # Copy to project root as CLAUDE.md
 ├── skills/
 │   ├── solidity-coding/      # Coding standards
 │   │   └── SKILL.md

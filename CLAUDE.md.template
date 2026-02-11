@@ -1,0 +1,21 @@
+# Project Rules
+
+## Skill Auto-Invoke Rules
+
+Before writing or modifying any Solidity contract (.sol files), you MUST invoke:
+- /solidity-coding
+- /solidity-security
+
+Before writing or modifying test files (*.t.sol), you MUST invoke:
+- /solidity-testing
+
+Before deploying contracts or writing deployment scripts (*.s.sol), you MUST invoke:
+- /solidity-deploy
+- /defi-security
+
+Before creating git commits or PRs, you MUST invoke:
+- /git-workflow
+
+## Language
+
+Always respond in the same language the user is using.
