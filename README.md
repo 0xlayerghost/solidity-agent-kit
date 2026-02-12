@@ -12,7 +12,7 @@ A comprehensive agent skills toolkit for Solidity smart contract development wit
 # Interactive — choose which skills to install
 npx skills add 0xlayerghost/solidity-agent-kit
 
-# Install all 7 skills at once
+# Install all 8 skills at once
 npx skills add 0xlayerghost/solidity-agent-kit -y
 ```
 
@@ -74,6 +74,7 @@ Claude Code, Cursor, Windsurf, Trae, Codex, Gemini CLI, OpenCode, and more.
 | Skill | Description | skills.sh |
 |-------|-------------|-----------|
 | **solidity-coding** | Coding standards, naming conventions, project structure for Foundry | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-coding) |
+| **solidity-debug** | Failed tx debugging, gas diagnosis, calldata decoding, revert analysis using cast | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-debug) |
 | **solidity-security** | Private key protection, gas control, security best practices | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-security) |
 | **solidity-deploy** | Pre-deployment checks, deployment rules, post-deployment workflow | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-deploy) |
 | **solidity-testing** | Test organization, coverage requirements, fuzz testing with Foundry | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-testing) |
@@ -100,6 +101,8 @@ solidity-agent-kit/
 ├── CLAUDE.md.template          # Copy to project root as CLAUDE.md
 ├── skills/
 │   ├── solidity-coding/      # Coding standards
+│   │   └── SKILL.md
+│   ├── solidity-debug/       # On-chain tx debugging
 │   │   └── SKILL.md
 │   ├── solidity-security/    # Security practices
 │   │   └── SKILL.md

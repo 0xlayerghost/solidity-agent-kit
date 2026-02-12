@@ -13,6 +13,9 @@ Before deploying contracts or writing deployment scripts (*.s.sol), you MUST inv
 - /solidity-deploy
 - /defi-security
 
+Before debugging failed on-chain transactions, you MUST invoke:
+- /solidity-debug
+
 Before creating git commits or PRs, you MUST invoke:
 - /git-workflow
 
