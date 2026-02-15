@@ -23,13 +23,16 @@ When writing or reviewing Solidity code, apply these rules:
 | Situation | Required Action |
 |-----------|----------------|
 | External ETH/token transfer | Use `ReentrancyGuard` + Checks-Effects-Interactions (CEI) pattern |
-| Owner-only function | Inherit `Ownable` from `@openzeppelin/contracts/access/Ownable.sol` (OZ 4.9.x) |
+| ERC20 token interaction | Use `SafeERC20` — call `safeTransfer` / `safeTransferFrom`, never raw `transfer` / `transferFrom` |
+| Owner-only function | Inherit `Ownable2Step` (preferred) or `Ownable` from OZ 4.9.x — `Ownable2Step` prevents accidental owner loss |
 | Multi-role access | Use `AccessControl` from `@openzeppelin/contracts/access/AccessControl.sol` |
-| Token approval | Reset allowance to 0 before setting new value, or use `safeIncreaseAllowance` |
-| Price data needed | Use Chainlink oracle or TWAP — never use spot pool price directly |
-| Upgradeable contract | Prefer UUPS (`UUPSUpgradeable`) over TransparentProxy for gas efficiency |
+| Token approval | Use `safeIncreaseAllowance` / `safeDecreaseAllowance` from `SafeERC20` — never raw `approve` |
+| Price data needed | Use Chainlink `AggregatorV3Interface` if feed exists; otherwise TWAP with min-liquidity check — never use spot pool price directly |
+| Upgradeable contract | Prefer UUPS (`UUPSUpgradeable`) over TransparentProxy; always use `Initializable` |
 | Solidity version < 0.8.0 | Must use `SafeMath` — but strongly prefer upgrading to 0.8.20+ |
-| Emergency scenario | Inherit `Pausable`, implement `pause()` / `unpause()` with `onlyOwner` |
+| Emergency scenario | Inherit `Pausable`, add `whenNotPaused` to user-facing functions; keep admin/emergency functions unpaused |
+| Whitelist / airdrop | Use `MerkleProof` for gas-efficient verification — never store full address lists on-chain |
+| Signature-based auth | Use `ECDSA` + `EIP712` — never roll custom signature verification |
 
 ## Reentrancy Protection
 
@@ -58,15 +61,33 @@ When writing or reviewing Solidity code, apply these rules:
 
 Before submitting code for review or audit, verify:
 
+**Access & Control:**
 - [ ] All external/public functions have `nonReentrant` where applicable
 - [ ] No `tx.origin` used for authentication (use `msg.sender`)
 - [ ] No `delegatecall` to untrusted addresses
+- [ ] Owner transfer uses `Ownable2Step` (not `Ownable`) to prevent accidental loss
+- [ ] Contracts with user-facing functions inherit `Pausable` with `pause()` / `unpause()`
+
+**Token & Fund Safety:**
+- [ ] All ERC20 interactions use `SafeERC20` (`safeTransfer` / `safeTransferFrom`)
+- [ ] No raw `token.transfer()` or `require(token.transfer())` patterns
+- [ ] Token approvals use `safeIncreaseAllowance`, not raw `approve`
 - [ ] All `external call` return values checked
+
+**Code Quality:**
 - [ ] Events emitted for every state change
 - [ ] No hardcoded addresses — use config or constructor params
 - [ ] `.env` is in `.gitignore`
+
+**Oracle & Price (if applicable):**
+- [ ] Price data sourced from Chainlink feed or TWAP — never raw spot price
+- [ ] Oracle has minimum liquidity check — revert if pool reserves too low
+- [ ] Price deviation circuit breaker in place
+
+**Testing:**
 - [ ] `forge test` passes with zero failures
 - [ ] `forge coverage` shows adequate coverage on security-critical paths
+- [ ] Fuzz tests cover arithmetic edge cases (zero, max uint, boundary values)
 
 ## Security Verification Commands
 
