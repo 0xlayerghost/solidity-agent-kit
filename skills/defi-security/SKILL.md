@@ -22,6 +22,8 @@ description: "[AUTO-INVOKE] MUST be invoked BEFORE deploying DeFi contracts (DEX
 | Flash loan attack | Check `block.number` change between operations, or use TWAP pricing |
 | Price manipulation | Chainlink oracle or TWAP — never rely on spot AMM reserves for pricing |
 | Approval exploit | Use `safeIncreaseAllowance` / `safeDecreaseAllowance`, never raw `approve` for user flows |
+| Governance attack | Voting requires snapshot + minimum token holding period; timelock ≥ 48h on proposal execution |
+| ERC4626 inflation attack | First deposit must enforce minimum amount or use virtual shares to prevent share dilution via rounding |
 
 ## Anti-Whale Implementation Rules
 

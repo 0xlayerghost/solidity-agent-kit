@@ -33,6 +33,9 @@ When writing or reviewing Solidity code, apply these rules:
 | Emergency scenario | Inherit `Pausable`, add `whenNotPaused` to user-facing functions; keep admin/emergency functions unpaused |
 | Whitelist / airdrop | Use `MerkleProof` for gas-efficient verification — never store full address lists on-chain |
 | Signature-based auth | Use `ECDSA` + `EIP712` — never roll custom signature verification |
+| Signature content | Signature must bind `chainId` + `nonce` + `msg.sender` + `deadline` — prevent replay and cross-chain reuse |
+| Cross-chain bridge / third-party dependency | Audit all inherited third-party contract code — never assume dependencies are safe |
+| Deprecated / legacy contracts | Permanently `pause` or `selfdestruct` deprecated contracts — never leave unused contracts callable on-chain |
 
 ## Reentrancy Protection
 
