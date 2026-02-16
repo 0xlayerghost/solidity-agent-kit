@@ -22,6 +22,11 @@ Before conducting security audits or code reviews, you MUST invoke:
 Before creating git commits or PRs, you MUST invoke:
 - /git-workflow
 
+## Context Recovery
+
+After every `/clear`, you MUST re-invoke:
+- /claude-code-usage
+
 ## Language
 
 Always respond in the same language the user is using.
