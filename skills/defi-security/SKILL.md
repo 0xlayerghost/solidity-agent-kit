@@ -74,6 +74,6 @@ forge test --match-contract StakingTest --fuzz-runs 10000
 forge test --fork-url $MAINNET_RPC -vvvv
 
 # Simulate whale transaction on fork
-cast send <CONTRACT> "stake(uint256)" 1000000000000000000000000 \
-  --rpc-url $FORK_RPC --private-key $TEST_KEY
+cast call <CONTRACT> "stake(uint256)" 1000000000000000000000000 \
+  --rpc-url $FORK_RPC --from <WHALE_ADDRESS>
 ```

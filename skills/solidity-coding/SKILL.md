@@ -130,7 +130,7 @@ When writing Solidity contracts, prioritize using battle-tested OpenZeppelin lib
 
 | Scenario | Library | Notes |
 |----------|---------|-------|
-| Token price data | `AggregatorV3Interface` | Only for tokens with Chainlink feed; check [data.chain.link](https://data.chain.link) |
+| Token price data | `AggregatorV3Interface` | Only for tokens with Chainlink Data Feeds support |
 | Verifiable randomness (lottery/NFT) | `VRFConsumerBaseV2` | On-chain provably fair random numbers |
 | Automated execution (cron jobs) | `AutomationCompatible` | Replace centralized keepers |
 | Cross-chain messaging | `CCIP` | Cross-chain token/message transfer |

@@ -81,8 +81,7 @@ cast call <to> <input_data> \
 cast run <tx_hash> --rpc-url <archive_rpc_url>
 
 # 方法 C: 在线工具（备用）
-# Tenderly: https://dashboard.tenderly.co/tx/<chain>/<tx_hash>
-# Blocksec: https://phalcon.blocksec.com/
+# 使用 Tenderly 或 Blocksec Phalcon 等交易分析平台
 ```
 
 ## Step 7: 查询链上状态 — 确认交易失败后数据已回滚
@@ -116,13 +115,13 @@ source .env
 
 # 不指定 gas limit（让节点自动估算，推荐）
 cast send <contract> "functionName(uint256,address[],uint256[])" <arg1> "[<addr1>,<addr2>]" "[<amt1>,<amt2>]" \
-  --private-key $PRIVATE_KEY \
+  --account <KEYSTORE_NAME> \
   --rpc-url $RPC_URL \
   --legacy
 
 # 指定较高 gas limit（适用于已知消耗范围的场景）
 cast send <contract> "functionName(uint256)" <arg1> \
-  --private-key $PRIVATE_KEY \
+  --account <KEYSTORE_NAME> \
   --rpc-url $RPC_URL \
   --gas-limit 2000000 \
   --legacy
@@ -132,7 +131,7 @@ cast send <contract> "functionName(uint256)" <arg1> \
 
 | 规则 | 说明 |
 |------|------|
-| 私钥管理 | **永远使用 `source .env`** 加载私钥，禁止在命令中明文传入 |
+| 私钥管理 | **使用 Foundry Keystore (`--account`)** 管理私钥，禁止在命令中明文传入 |
 | 模拟优先 | 真实发送前先用 `cast call` 模拟，确认不会 revert |
 | 逐笔发送 | 批量重试时先发一笔验证，成功后再发剩余 |
 | 状态确认 | 发送后用 `cast receipt` 确认 status=1，再用 `cast call` 确认链上状态已变更 |
@@ -166,7 +165,7 @@ cast call <contract> "orderLocations(uint256)(address,uint256,bool)" 35 --rpc-ur
 
 # 8. 确认是 OOG → 不限 gas 重试
 cast send <contract> "unstake(uint256,address[],uint256[])" 35 "[addr1,addr2]" "[amt1,amt2]" \
-  --private-key $PRIVATE_KEY --rpc-url $RPC_URL --legacy
+  --account <KEYSTORE_NAME> --rpc-url $RPC_URL --legacy
 
 # 9. 确认成功
 cast receipt <new_tx_hash> --rpc-url $RPC_URL

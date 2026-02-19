@@ -17,8 +17,8 @@ description: "[AUTO-INVOKE] MUST be invoked BEFORE deploying contracts or writin
 | Run all tests | `forge test` — zero failures required |
 | Check gas report | `forge test --gas-report` — review critical functions |
 | Verify config | Manually check `config/*.json` parameters |
-| Dry-run | `forge script <Script> --fork-url $RPC_URL -vvvv` (no `--broadcast`) |
-| Check balance | `cast balance $DEPLOYER --rpc-url $RPC_URL` — sufficient gas? |
+| Dry-run | `forge script <Script> --fork-url <RPC_URL> -vvvv` (no `--broadcast`) |
+| Check balance | `cast balance <DEPLOYER> --rpc-url <RPC_URL>` — sufficient gas? |
 | Gas limit set | Deployment command must include `--gas-limit` |
 
 ## Deployment Decision Rules
@@ -34,43 +34,34 @@ description: "[AUTO-INVOKE] MUST be invoked BEFORE deploying contracts or writin
 ## Post-deployment Operations (all required)
 
 1. Update addresses in `config/*.json` and `deployments/latest.env`
-2. Test critical functions: `cast call` / `cast send` to verify on-chain behavior
+2. Test critical functions: `cast call` to verify on-chain state is correct
 3. Record changes in `docs/CHANGELOG.md`
 4. Submit PR with deployment transaction hash link
 5. If verification needed, run `forge verify-contract` separately
 
+## Key Security Rule
+
+- **Never pass private keys directly in commands.** Use Foundry Keystore (`cast wallet import`) to manage keys securely.
+- **Never include `--broadcast` in templates.** The user must explicitly add it when ready to deploy.
+
 ## Command Templates
 
 ```bash
-# Load environment
-source .env
-
-# Standard deployment (no verification by default)
+# Dry-run (simulation only, no on-chain execution)
 forge script script/Deploy.s.sol:DeployScript \
-  --rpc-url $RPC_URL \
-  --private-key $PRIVATE_KEY \
-  --broadcast \
+  --rpc-url <RPC_URL> \
   --gas-limit 5000000 \
   -vvvv
 
-# Deployment with verification (only when explicitly requested)
-forge script script/Deploy.s.sol:DeployScript \
-  --rpc-url $RPC_URL \
-  --private-key $PRIVATE_KEY \
-  --broadcast \
-  --verify \
-  --etherscan-api-key $ETHERSCAN_API_KEY \
-  --gas-limit 5000000 \
-  -vvvv
+# When user is ready to deploy, instruct them to add:
+#   --account <KEYSTORE_NAME> --broadcast
 
 # Verify existing contract separately
 forge verify-contract <ADDRESS> <CONTRACT> \
   --chain-id <CHAIN_ID> \
-  --etherscan-api-key $ETHERSCAN_API_KEY \
+  --etherscan-api-key <API_KEY> \
   --constructor-args $(cast abi-encode "constructor(address)" <ARG>)
 
-# Quick on-chain function test after deployment
-cast call <CONTRACT_ADDRESS> "functionName()" --rpc-url $RPC_URL
-cast send <CONTRACT_ADDRESS> "functionName(uint256)" 100 \
-  --rpc-url $RPC_URL --private-key $PRIVATE_KEY
+# Quick on-chain read test after deployment
+cast call <CONTRACT_ADDRESS> "functionName()" --rpc-url <RPC_URL>
 ```
