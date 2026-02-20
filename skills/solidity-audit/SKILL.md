@@ -1,6 +1,6 @@
 ---
 name: solidity-audit
-description: "Security audit and code review checklist. Covers 30+ vulnerability types with real-world exploit cases (2024-2026). Use when conducting security audits, code reviews, or pre-deployment security assessments."
+description: "Security audit and code review checklist. Covers 30+ vulnerability types with real-world exploit cases (2021-2026) and EVMbench Code4rena patterns. Use when conducting security audits, code reviews, or pre-deployment security assessments."
 ---
 
 # Solidity Security Audit Checklist
@@ -131,9 +131,52 @@ description: "Security audit and code review checklist. Covers 30+ vulnerability
 | Constructor call | Attack from constructor — `extcodesize == 0` during deployment |
 | CREATE2 pre-compute | Pre-calculate contract address, use as EOA before deploying |
 
+### 12. Proxy & Upgrade Vulnerabilities
+
+> Source: [EVMbench Paper §4.2, Appendix H](https://cdn.openai.com/evmbench/evmbench.pdf) / [Code4rena 2024-07-basin H-01](https://code4rena.com/reports/2024-07-basin)
+
+| Check | Detail |
+|-------|--------|
+| `_authorizeUpgrade` access control | UUPS `_authorizeUpgrade` must have `onlyOwner` modifier? |
+| Permissionless factory/registry | Can attacker use permissionless factory (e.g. Aquifer `boreWell`) to satisfy upgrade checks? |
+| `upgradeTo` modifier | Overridden `upgradeTo`/`upgradeToAndCall` retains `onlyProxy` modifier? |
+| Initializer protection | `initializer` modifier prevents re-initialization? Implementation calls `_disableInitializers()`? |
+| Storage layout compatibility | Upgrade-safe storage layout (storage gaps or ERC-7201 namespace)? |
+
+**Case**: [Code4rena 2024-07-basin H-01](https://code4rena.com/reports/2024-07-basin) (via [EVMbench Paper Fig.12, p.19](https://cdn.openai.com/evmbench/evmbench.pdf)) — `_authorizeUpgrade` only checked delegatecall and Aquifer registration but lacked `onlyOwner`, allowing anyone to upgrade a Well proxy to a malicious implementation and drain funds. Oracle patch: add a single `onlyOwner` modifier.
+
+### 13. Trust Boundary & Protocol Composability
+
+> Source: [EVMbench Paper §4.2.1, Fig.6](https://cdn.openai.com/evmbench/evmbench.pdf) / Code4rena [2024-04-noya H-08](https://code4rena.com/reports/2024-04-noya), [2024-07-benddao](https://code4rena.com/reports/2024-07-benddao)
+
+| Check | Detail |
+|-------|--------|
+| Cross-vault trust isolation | Registry/Router relay calls verify vault-level authorization? |
+| Trusted sender abuse | Functions like `sendTokensToTrustedAddress` verify source vault, not just router identity? |
+| Flash loan + routing combo | Can attacker use flash loan callback to make router impersonate arbitrary vault? |
+| Collateral ownership verification | Liquidation/staking operations verify actual NFT/collateral owner? |
+| Cross-contract state dependency | Multi-contract interactions free from intermediate state dependencies? |
+
+**Cases**:
+- [Code4rena 2024-04-noya H-08](https://code4rena.com/reports/2024-04-noya) (via [EVMbench Paper §4.2.1, Fig.6, p.8-9](https://cdn.openai.com/evmbench/evmbench.pdf)) — PositionRegistry + BalancerFlashLoan pipeline lacked vault-level auth; keeper used flash loan to make router impersonate any vault, draining cross-vault funds via `sendTokensToTrustedAddress`
+- [Code4rena 2024-07-benddao](https://code4rena.com/reports/2024-07-benddao) (via [EVMbench Paper Fig.13, p.19](https://cdn.openai.com/evmbench/evmbench.pdf)) — `isolateLiquidate` did not verify NFT ownership, allowing attacker to pass others' tokenIds for liquidation
+
+### 14. State Ordering & Counter Manipulation
+
+> Source: [EVMbench Paper Appendix H.1, Fig.19-21](https://cdn.openai.com/evmbench/evmbench.pdf) / [Code4rena 2024-08-phi H-06](https://code4rena.com/reports/2024-08-phi)
+
+| Check | Detail |
+|-------|--------|
+| Counter/ID increment order | `credIdCounter++` or similar ID increments happen before external calls? |
+| Auto-buy in create | `create()` functions with auto `buy()` calls execute only after ID/state fully initialized? |
+| Refund timing | ETH refund (excess) happens after all state updates complete? |
+| Bonding curve metadata overwrite | Can attacker reenter to modify bonding curve/pricing params — buy cheap, switch to expensive curve, sell high? |
+
+**Case**: [Code4rena 2024-08-phi H-06](https://code4rena.com/reports/2024-08-phi) (via [EVMbench Paper Appendix H.1, p.25-28](https://cdn.openai.com/evmbench/evmbench.pdf)) — `_createCredInternal` called `buyShareCred` before incrementing `credIdCounter`; `_handleTrade` refunded excess ETH before updating `lastTradeTimestamp`. Attacker reentered to accumulate shares on cheap curve, overwrote metadata to expensive curve, sold to drain all contract ETH. Fix: add `nonReentrant` to `buyShareCred`/`sellShareCred`.
+
 ## Infrastructure-Level Vulnerabilities
 
-### 12. Frontend / UI Injection
+### 15. Frontend / UI Injection
 
 Attackers inject malicious code into the dApp frontend or signing interface.
 
@@ -141,7 +184,7 @@ Attackers inject malicious code into the dApp frontend or signing interface.
 
 **Case**: [Bybit (Feb 2025, $1.4B)](https://www.nccgroup.com/research-blog/in-depth-technical-analysis-of-the-bybit-hack/) — malicious JavaScript injected into Safe{Wallet} UI, tampered with transaction data during signing.
 
-### 13. Private Key & Social Engineering
+### 16. Private Key & Social Engineering
 
 Compromised keys remain the #1 loss source in 2025-2026.
 
@@ -149,7 +192,7 @@ Compromised keys remain the #1 loss source in 2025-2026.
 
 **Case**: [Step Finance (Jan 2026, $30M)](https://www.halborn.com/blog/post/explained-the-step-finance-hack-january-2026) — treasury wallet private keys compromised via device breach.
 
-### 14. Cross-Chain Bridge
+### 17. Cross-Chain Bridge
 
 | Check | Detail |
 |-------|--------|
@@ -159,7 +202,7 @@ Compromised keys remain the #1 loss source in 2025-2026.
 
 **Case**: [SagaEVM (Jan 2026, $7M)](https://www.theblock.co/post/386638/sagaevm-suffers-exploit) — inherited vulnerable EVM precompile bridge logic from Ethermint.
 
-### 15. Legacy / Deprecated Contracts
+### 18. Legacy / Deprecated Contracts
 
 Old contracts with known bugs remain callable on-chain forever.
 
@@ -210,11 +253,59 @@ When conducting a security audit, check each item:
 - [ ] Price: TWAP or multi-oracle, not single-block spot
 - [ ] Vault: minimum first deposit or virtual shares (ERC4626)
 
+**Proxy & Upgrade ([EVMbench](https://cdn.openai.com/evmbench/evmbench.pdf)):**
+- [ ] UUPS `_authorizeUpgrade` has `onlyOwner` — [EVMbench/basin H-01]
+- [ ] `upgradeTo`/`upgradeToAndCall` retains `onlyProxy` — [EVMbench/basin H-01]
+- [ ] Implementation constructor calls `_disableInitializers()` — [EVMbench/basin H-01]
+- [ ] Storage layout upgrade-compatible (storage gaps or ERC-7201) — [EVMbench/basin H-01]
+
+**Trust Boundary & Composability ([EVMbench](https://cdn.openai.com/evmbench/evmbench.pdf)):**
+- [ ] Router/Registry relay calls verify source vault/contract authorization — [EVMbench/noya H-08]
+- [ ] Liquidation operations verify actual collateral ownership — [EVMbench/benddao]
+- [ ] Flash loan callback paths cannot be abused to penetrate trust boundaries — [EVMbench/noya H-08]
+- [ ] No intermediate state dependencies in multi-contract interactions — [EVMbench/noya H-08]
+
+**State Ordering ([EVMbench](https://cdn.openai.com/evmbench/evmbench.pdf)):**
+- [ ] Counter/ID increments complete before external calls — [EVMbench/phi H-06]
+- [ ] ETH refunds execute after all state updates — [EVMbench/phi H-06]
+- [ ] Auto-operations in create functions (auto-buy etc.) execute after full initialization — [EVMbench/phi H-06]
+
 **Infrastructure:**
 - [ ] Third-party dependencies audited (bridge code, inherited contracts)
 - [ ] No deprecated contracts still callable with admin/mint functions
 - [ ] Multisig on all treasury and admin wallets
 - [ ] Frontend transaction verification (calldata matches expected)
+
+## AI Agent Audit Methodology
+
+> Source: [EVMbench (OpenAI/Paradigm, Feb 2026)](https://cdn.openai.com/evmbench/evmbench.pdf) — evaluated AI agents on 120 high-severity vulnerabilities from 40 Code4rena audit repositories across Detect/Patch/Exploit modes.
+
+### Audit Strategy
+
+1. **Coverage over depth**: scan ALL in-scope files; do not stop after finding the first vulnerability [EVMbench §5, p.10]
+2. **Three-phase audit**: Detect (identify vulnerabilities) -> Patch (write fix) -> Exploit (build PoC) [EVMbench §3.2, p.5]
+3. **Incremental output**: write findings continuously during audit to preserve progress [EVMbench Appendix G, Fig.18, p.24]
+4. **Systematic category scan**: check by vulnerability class (reentrancy, access control, numerical, oracle...) rather than intuition [EVMbench §3.1, p.4]
+5. **Verify fixes**: after patching, confirm original tests still pass AND exploit is no longer viable [EVMbench §3.2.2, p.5]
+
+### High-Frequency Vulnerability Patterns (Code4rena Data)
+
+> Source: EVMbench Table 4 (p.17) — 40 audit repositories
+
+- Missing access control (upgradeability, liquidation, admin functions) — basin H-01, munchables, benddao
+- Reentrancy + state ordering errors (refund before state update) — phi H-06, noya H-08
+- Flash loan trust boundary penetration (exploiting router/registry trust propagation) — noya H-08
+- Signature replay / front-running (checkpoint bypass, session signature replay) — sequence H-01, H-02
+- Numerical precision / rounding (bonding curve, micro-withdrawals) — abracadabra H-02, size H-02
+
+### Key Findings
+
+> Source: EVMbench Paper §4.1 (p.7), Fig.7 (p.10), Fig.10 (p.18), Fig.11 (p.19)
+
+- With mechanism hints, Patch success rate jumps from ~40% to ~94% [Fig.7] — agents know how to fix but struggle to find vulnerabilities
+- Most vulnerabilities require ≤5 lines of code to fix [Fig.10, p.18]
+- Most exploits require only 1-3 transactions [Fig.11, p.19]
+- Agents whose finding count is closest to actual vulnerability count score highest (quality > quantity) [Fig.5, p.8]
 
 ## 2021-2026 Incident Quick Reference
 

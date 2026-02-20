@@ -36,6 +36,9 @@ When writing or reviewing Solidity code, apply these rules:
 | Signature content | Signature must bind `chainId` + `nonce` + `msg.sender` + `deadline` — prevent replay and cross-chain reuse |
 | Cross-chain bridge / third-party dependency | Audit all inherited third-party contract code — never assume dependencies are safe |
 | Deprecated / legacy contracts | Permanently `pause` or `selfdestruct` deprecated contracts — never leave unused contracts callable on-chain |
+| UUPS upgrade pattern | `_authorizeUpgrade` must have `onlyOwner`; implementation constructor calls `_disableInitializers()`; retain `onlyProxy` on `upgradeTo` — [EVMbench](https://cdn.openai.com/evmbench/evmbench.pdf)/[basin H-01](https://code4rena.com/reports/2024-07-basin) |
+| Multi-contract trust boundary | Router/Registry relay calls must verify source contract authorization; never trust caller identity inside flash loan callbacks — [EVMbench](https://cdn.openai.com/evmbench/evmbench.pdf)/[noya H-08](https://code4rena.com/reports/2024-04-noya) |
+| Counter/ID + external call | All counter increments and ID assignments must complete before external calls; ETH refunds must be last — [EVMbench](https://cdn.openai.com/evmbench/evmbench.pdf)/[phi H-06](https://code4rena.com/reports/2024-08-phi) |
 
 ## Reentrancy Protection
 
@@ -70,6 +73,9 @@ Before submitting code for review or audit, verify:
 - [ ] No `delegatecall` to untrusted addresses
 - [ ] Owner transfer uses `Ownable2Step` (not `Ownable`) to prevent accidental loss
 - [ ] Contracts with user-facing functions inherit `Pausable` with `pause()` / `unpause()`
+- [ ] UUPS `_authorizeUpgrade` has `onlyOwner` modifier — [EVMbench](https://cdn.openai.com/evmbench/evmbench.pdf)/[basin H-01](https://code4rena.com/reports/2024-07-basin)
+- [ ] Implementation constructor calls `_disableInitializers()` — [EVMbench](https://cdn.openai.com/evmbench/evmbench.pdf)/[basin H-01](https://code4rena.com/reports/2024-07-basin)
+- [ ] Router/Registry relay operations verify source contract authorization — [EVMbench](https://cdn.openai.com/evmbench/evmbench.pdf)/[noya H-08](https://code4rena.com/reports/2024-04-noya)
 
 **Token & Fund Safety:**
 - [ ] All ERC20 interactions use `SafeERC20` (`safeTransfer` / `safeTransferFrom`)

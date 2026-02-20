@@ -24,6 +24,9 @@ description: "[AUTO-INVOKE] MUST be invoked BEFORE deploying DeFi contracts (DEX
 | Approval exploit | Use `safeIncreaseAllowance` / `safeDecreaseAllowance`, never raw `approve` for user flows |
 | Governance attack | Voting requires snapshot + minimum token holding period; timelock ≥ 48h on proposal execution |
 | ERC4626 inflation attack | First deposit must enforce minimum amount or use virtual shares to prevent share dilution via rounding |
+| Cross-vault trust bypass | Router/Registry relay must verify vault authorization; never trust caller identity inside flash loan callbacks — [EVMbench](https://cdn.openai.com/evmbench/evmbench.pdf)/[noya H-08](https://code4rena.com/reports/2024-04-noya) |
+| Collateral ownership exploit | Liquidation/staking operations must verify actual NFT/collateral ownership — [EVMbench](https://cdn.openai.com/evmbench/evmbench.pdf)/[benddao](https://code4rena.com/reports/2024-07-benddao) |
+| Bonding curve manipulation | ID/pricing params in create operations must be fully determined before external calls — [EVMbench](https://cdn.openai.com/evmbench/evmbench.pdf)/[phi H-06](https://code4rena.com/reports/2024-08-phi) |
 
 ## Anti-Whale Implementation Rules
 
@@ -37,6 +40,15 @@ description: "[AUTO-INVOKE] MUST be invoked BEFORE deploying DeFi contracts (DEX
 - For price-sensitive operations: require that `block.number` has changed since last interaction
 - For oracle-dependent calculations: use time-weighted average (TWAP) over minimum 30 minutes
 - For critical state changes: add minimum holding period before action (e.g., must hold tokens for N blocks)
+
+## Protocol Composability Risks
+
+> Source: [EVMbench (OpenAI/Paradigm, Feb 2026)](https://cdn.openai.com/evmbench/evmbench.pdf) — vulnerability patterns from Code4rena audits
+
+- **Cross-vault operations** [[noya H-08](https://code4rena.com/reports/2024-04-noya)]: Registry/Router relay calls must verify vault-level authorization; prevent keeper from using flash loan to impersonate other vaults
+- **Lending collateral** [[benddao](https://code4rena.com/reports/2024-07-benddao)]: Liquidation functions must verify `msg.sender` actually owns or is authorized to operate on target collateral
+- **Bonding curve** [[phi H-06](https://code4rena.com/reports/2024-08-phi)]: In create + auto-buy operations, ID assignment and pricing params must be fully determined before the buy transaction executes; prevent reentrancy from modifying them
+- **Shared registries** [[noya H-08](https://code4rena.com/reports/2024-04-noya)]: Permission propagation chains in shared registries must be verified hop-by-hop; never rely solely on "trusted sender" flags
 
 ## Launch Checklist
 
