@@ -1,6 +1,6 @@
 ---
 name: solidity-coding
-description: "[AUTO-INVOKE] MUST be invoked BEFORE writing or modifying any Solidity contract (.sol files). Covers pragma version, naming conventions, project layout, OpenZeppelin library selection standards, Chainlink integration, and anti-patterns. Trigger: any task involving creating, editing, or reviewing .sol source files."
+description: "[AUTO-INVOKE] MUST be invoked BEFORE writing or modifying any Solidity contract (.sol files). Covers pragma version, naming conventions, project layout, OpenZeppelin library selection standards, oracle integration, and anti-patterns. Trigger: any task involving creating, editing, or reviewing .sol source files."
 ---
 
 # Solidity Coding Standards
@@ -11,7 +11,7 @@ description: "[AUTO-INVOKE] MUST be invoked BEFORE writing or modifying any Soli
 
 ## Coding Principles
 
-- **Pragma**: Use `pragma solidity ^0.8.20;` — keep consistent across all files in the project
+- **Pragma**: Use `pragma solidity ^0.8.19;` — keep consistent across all files in the project
 - **Dependencies**: OpenZeppelin Contracts 4.9.x, manage imports via `remappings.txt`
 - **Error Handling**: Prefer custom errors over `require` strings — saves gas and is more expressive
   - Define: `error InsufficientBalance(uint256 available, uint256 required);`
@@ -40,8 +40,8 @@ description: "[AUTO-INVOKE] MUST be invoked BEFORE writing or modifying any Soli
 |-----------|------|
 | Cross-contract constants | Place in `src/common/Const.sol` |
 | Interface definitions | Place in `src/interfaces/I<Name>.sol`, separate from implementation |
-| Simple on-chain queries | Use `cast call` or `cast send` |
-| Complex multi-step operations | Use `forge script` |
+| Simple on-chain queries | Use Foundry cast CLI (call / send) |
+| Complex multi-step operations | Use Foundry script (*.s.sol) |
 | Import style | Use named imports: `import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";` |
 
 ## Project Directory Structure
@@ -55,7 +55,7 @@ script/           — Deployment & interaction scripts (*.s.sol)
 config/           — Network config, parameters (*.json)
 deployments/      — Deployment records (latest.env)
 docs/             — Documentation, changelogs
-lib/              — Dependencies (managed by forge install)
+lib/              — Dependencies (managed by Foundry)
 ```
 
 ## Configuration Management
@@ -126,11 +126,11 @@ When writing Solidity contracts, prioritize using battle-tested OpenZeppelin lib
 
 **Rule**: New projects prefer `UUPSUpgradeable`; always use `Initializable` for upgradeable contracts
 
-### Chainlink Integration
+### Oracle and Off-Chain Services
 
 | Scenario | Library | Notes |
 |----------|---------|-------|
-| Token price data | `AggregatorV3Interface` | Only for tokens with Chainlink Data Feeds support |
+| Token price data | `AggregatorV3Interface` | Only for tokens with supported oracle data feeds |
 | Verifiable randomness (lottery/NFT) | `VRFConsumerBaseV2` | On-chain provably fair random numbers |
 | Automated execution (cron jobs) | `AutomationCompatible` | Replace centralized keepers |
 | Cross-chain messaging | `CCIP` | Cross-chain token/message transfer |
@@ -151,8 +151,8 @@ How many admin roles needed?
 └── DAO/governance → TimelockController
 
 Does contract need price data?
-├── Token has Chainlink feed → AggregatorV3Interface
-├── No Chainlink feed → Custom TWAP with min-liquidity check
+├── Token has oracle feed → AggregatorV3Interface
+├── No oracle feed → Custom TWAP with min-liquidity check
 └── No price needed → Skip
 
 Will contract need upgrades?
@@ -171,19 +171,10 @@ Will contract need upgrades?
 
 ## Foundry Quick Reference
 
-```bash
-# Create new project
-forge init <project-name>
-
-# Install dependency
-forge install OpenZeppelin/openzeppelin-contracts@v4.9.6
-
-# Build contracts
-forge build
-
-# Format code
-forge fmt
-
-# Update remappings
-forge remappings > remappings.txt
-```
+| Operation | Command |
+|-----------|---------|
+| Create new project | `forge init <project-name>` |
+| Install dependency | `forge install openzeppelin-contracts` |
+| Build contracts | `forge build` |
+| Format code | `forge fmt` |
+| Update remappings | `forge remappings` |

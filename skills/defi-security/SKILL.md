@@ -42,15 +42,15 @@ description: "[AUTO-INVOKE] MUST be invoked BEFORE deploying DeFi contracts (DEX
 
 Before mainnet deployment, verify all items:
 
-- [ ] All `onlyOwner` functions transferred to multisig (e.g., Gnosis Safe)
+- [ ] All `onlyOwner` functions transferred to multisig wallet
 - [ ] Timelock contract deployed and configured (minimum 24h delay for critical changes)
-- [ ] `Pausable` emergency switch tested — both `pause()` and `unpause()` work correctly
+- [ ] Emergency pause mechanism tested — both pause and unpause functions work correctly
 - [ ] Daily limit parameters documented and set to reasonable values
 - [ ] Third-party security audit completed and all critical/high findings resolved
 - [ ] Testnet deployment running for minimum 7 days with no issues
 - [ ] Slippage, fee, and lock period parameters reviewed and documented
 - [ ] Initial liquidity plan documented (amount, lock duration, LP token handling)
-- [ ] `forge test --fuzz-runs 10000` passes on all DeFi-critical functions
+- [ ] Fuzz testing passes with high iterations (10000+) on all DeFi-critical functions
 
 ## Emergency Response Procedure
 
@@ -64,16 +64,10 @@ Before mainnet deployment, verify all items:
 | 6. Resume | Call `unpause()` after fix verified on fork — or migrate to new contract |
 | 7. Post-mortem | Publish detailed incident report within 48 hours |
 
-## DeFi Testing Commands
+## DeFi Testing Reference
 
-```bash
-# Fuzz test fund flows with high iterations
-forge test --match-contract StakingTest --fuzz-runs 10000
-
-# Fork mainnet to test against real state
-forge test --fork-url $MAINNET_RPC -vvvv
-
-# Simulate whale transaction on fork
-cast call <CONTRACT> "stake(uint256)" 1000000000000000000000000 \
-  --rpc-url $FORK_RPC --from <WHALE_ADDRESS>
-```
+| Test Scenario | Approach |
+|---------------|----------|
+| Fuzz test fund flows | Run fuzz tests on staking/pool contracts with high iterations (10000+) |
+| Fork mainnet testing | Use Foundry fork mode against mainnet RPC to test with real state |
+| Simulate whale transaction | Use Foundry cast CLI to simulate large-amount calls on a forked network |
