@@ -1,0 +1,19 @@
+# Environment
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Build artifacts
+out/
+cache/
+artifacts/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Reference materials (PDFs, papers)
+openai/

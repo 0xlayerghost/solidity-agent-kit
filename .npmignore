@@ -1,0 +1,10 @@
+# Reference materials
+openai/
+
+# Git and CI
+.github/
+.gitignore
+
+# Dev files
+twitter-thread.md
+CLAUDE.md.template
