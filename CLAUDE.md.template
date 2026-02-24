@@ -1,3 +1,4 @@
+
 # Project Rules
 
 ## Skill Auto-Invoke Rules
@@ -26,6 +27,57 @@ Before creating git commits or PRs, you MUST invoke:
 
 After every `/clear`, you MUST re-invoke:
 - /claude-code-usage
+
+## Workflow Orchestration
+
+### 1. Plan Mode Default
+- Enter Plan Mode for any non-trivial task (3+ steps or architectural decisions)
+- Understand existing code before proposing changes
+- Break down complex tasks using TodoWrite before starting
+
+### 2. Subagent Strategy
+- Use subagents (Task tool) extensively to keep the main context window clean
+- Delegate code search and file exploration to Explore agent
+- Delegate test runs and builds to Bash agent
+
+### 3. Self-Improvement Loop
+- Record lessons learned after every user correction
+- Continuously improve workflow, avoid repeating mistakes
+
+### 4. Verification Before Done
+- Verify before marking complete: run tests, check compilation, prove correctness
+- Solidity projects: `forge build` + `forge test` must pass
+- Never mark a task as completed unless verified
+
+### 5. Autonomous Bug Fixing
+- When encountering compilation errors or test failures, fix them directly without waiting for guidance
+- Re-verify after every fix
+
+## Task Management
+
+- Use TodoWrite tool to track all task progress
+- Break down plans before starting, mark completed immediately after finishing
+- Only one task should be in_progress at any time
+
+## Core Principles
+
+### Simplicity First
+- Keep it as simple as possible, touch the least amount of code
+- No over-engineering, no adding features that were not requested
+
+### No Landmines
+- Find root causes, no temporary fixes
+- Leave no hidden hazards in the code
+
+### Minimal Impact
+- Only change what must be changed, do not refactor surrounding code
+- Do not add unnecessary comments, type annotations, or documentation
+
+## MCP Tools
+
+- **fetch**: Lightweight web fetching, suitable for API docs and static pages
+- **playwright**: Dynamic pages, JS-rendered content, screenshots
+- Prefer fetch first, use playwright only when fetch is insufficient
 
 ## Language
 
