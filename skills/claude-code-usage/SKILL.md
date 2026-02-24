@@ -103,6 +103,10 @@ Claude: "请帮我写一个 Staking 合约，要求如下：
 
 > **Don't guess what you missed — let Claude tell you.** One round of meta-prompting saves multiple rounds of trial and error.
 
+### Post-Correction Rule
+
+- **Every time after correcting a mistake, always end with: "Update your `CLAUDE.md` so you won't make the same mistake again."** This ensures lessons learned are persisted into the project memory, preventing the same error from recurring in future sessions.
+
 ## Git Operation Rules
 
 - Always run `git diff` before committing to review changes
