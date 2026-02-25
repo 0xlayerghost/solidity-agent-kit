@@ -28,8 +28,9 @@ Use Conventional Commits format: `<type>: <short description>`
 1. Run `git diff` to review all changes before staging
 2. Stage specific files — avoid `git add .` to prevent committing `.env` or artifacts
 3. Write concise commit message describing the **why**, not the **what**
-4. **Only commit** — never `git push` unless explicitly requested
-5. **Never push directly to main/master** — always use feature branches
+4. **Never add `Co-Authored-By` lines** — commit messages should only contain the description
+5. **Only commit** — never `git push` unless explicitly requested
+6. **Never push directly to main/master** — always use feature branches
 
 ## Branch Naming
 
