@@ -27,6 +27,7 @@ description: "[AUTO-INVOKE] MUST be invoked BEFORE deploying DeFi contracts (DEX
 | Cross-vault trust bypass | Router/Registry relay must verify vault authorization; never trust caller identity inside flash loan callbacks — [EVMbench](https://cdn.openai.com/evmbench/evmbench.pdf)/[noya H-08](https://code4rena.com/reports/2024-04-noya) |
 | Collateral ownership exploit | Liquidation/staking operations must verify actual NFT/collateral ownership — [EVMbench](https://cdn.openai.com/evmbench/evmbench.pdf)/[benddao](https://code4rena.com/reports/2024-07-benddao) |
 | Bonding curve manipulation | ID/pricing params in create operations must be fully determined before external calls — [EVMbench](https://cdn.openai.com/evmbench/evmbench.pdf)/[phi H-06](https://code4rena.com/reports/2024-08-phi) |
+| DEX pair `_transfer` TOCTOU | Never distinguish operation type by balance/reserve checks in `_transfer` — both directions are exploitable: buy vs removeLiquidity (`pair→user`) and sell vs addLiquidity (`user→pair`); use address whitelist only; new projects prefer Uniswap V4 Hook |
 
 ## Anti-Whale Implementation Rules
 
