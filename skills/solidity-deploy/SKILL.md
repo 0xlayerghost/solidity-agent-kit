@@ -30,6 +30,7 @@ description: "[AUTO-INVOKE] MUST be invoked BEFORE deploying contracts or writin
 | Post-deploy verification | Use `forge verify-contract` as a separate step |
 | Multi-chain deploy | Separate scripts per chain, never batch multiple chains in one script |
 | Proxy deployment | Deploy implementation first, then proxy — verify both separately |
+| **Upgradeable contract** | **Use OpenZeppelin Upgrades Plugin** (see below) — never hand-roll proxy deployment |
 
 ## Post-deployment Operations (all required)
 
@@ -65,3 +66,124 @@ forge verify-contract <ADDRESS> <CONTRACT> \
 # Quick on-chain read test after deployment
 cast call <CONTRACT_ADDRESS> "functionName()" --rpc-url <RPC_URL>
 ```
+
+## Upgradeable Contract Deployment (OpenZeppelin Upgrades Plugin)
+
+For any upgradeable contract (UUPS, Transparent, Beacon), use the OpenZeppelin Foundry Upgrades Plugin instead of hand-rolling proxy deployment scripts.
+
+### Why Use the Plugin
+
+| Manual Approach | With Plugin |
+|---|---|
+| ~30 lines: deploy impl → deploy proxy → encode initializer → wire up | **1 line**: `Upgrades.deployUUPSProxy(...)` |
+| ~20 lines: deploy new impl → validate storage → upgrade proxy | **1 line**: `Upgrades.upgradeProxy(...)` |
+| Storage layout compatibility: check by eye | **Auto-checked**, incompatible layouts are rejected |
+| Forgot `_disableInitializers()`? No warning | **Auto-validated** |
+
+### Installation
+
+```bash
+forge install OpenZeppelin/openzeppelin-foundry-upgrades
+forge install OpenZeppelin/openzeppelin-contracts-upgradeable
+```
+
+Add to `remappings.txt`:
+```
+@openzeppelin/contracts/=lib/openzeppelin-contracts-upgradeable/lib/openzeppelin-contracts/contracts/
+@openzeppelin/contracts-upgradeable/=lib/openzeppelin-contracts-upgradeable/contracts/
+```
+
+### Deploy Script Template (UUPS)
+
+```solidity
+// script/Deploy.s.sol
+import {Script, console} from "forge-std/Script.sol";
+import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";
+import {MyContract} from "../src/MyContract.sol";
+
+contract DeployScript is Script {
+    function run() public {
+        vm.startBroadcast();
+
+        // One line: deploys impl + proxy + calls initialize
+        address proxy = Upgrades.deployUUPSProxy(
+            "MyContract.sol",
+            abi.encodeCall(MyContract.initialize, (msg.sender))
+        );
+
+        console.log("Proxy:", proxy);
+        console.log("Impl:", Upgrades.getImplementationAddress(proxy));
+
+        vm.stopBroadcast();
+    }
+}
+```
+
+### Upgrade Script Template
+
+```solidity
+// script/Upgrade.s.sol
+import {Script, console} from "forge-std/Script.sol";
+import {Upgrades} from "openzeppelin-foundry-upgrades/Upgrades.sol";
+
+contract UpgradeScript is Script {
+    function run() public {
+        address proxy = vm.envAddress("PROXY_ADDRESS");
+        vm.startBroadcast();
+
+        // One line: validates storage layout + deploys new impl + upgrades proxy
+        Upgrades.upgradeProxy(proxy, "MyContractV2.sol", "");
+
+        console.log("Upgraded. New impl:", Upgrades.getImplementationAddress(proxy));
+
+        vm.stopBroadcast();
+    }
+}
+```
+
+Add `@custom:oz-upgrades-from MyContract` annotation to V2 contract for automatic reference:
+
+```solidity
+/// @custom:oz-upgrades-from MyContract
+contract MyContractV2 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
+    // ...
+}
+```
+
+### Commands
+
+```bash
+# Deploy proxy (dry-run) — --ffi is required for storage layout checks
+forge script script/Deploy.s.sol --rpc-url <RPC_URL> --ffi -vvvv
+
+# Deploy proxy (broadcast)
+forge script script/Deploy.s.sol --rpc-url <RPC_URL> --ffi --account <KEYSTORE_NAME> --broadcast
+
+# Upgrade proxy (dry-run)
+PROXY_ADDRESS=0x... forge script script/Upgrade.s.sol --rpc-url <RPC_URL> --ffi -vvvv
+
+# Upgrade proxy (broadcast)
+PROXY_ADDRESS=0x... forge script script/Upgrade.s.sol --rpc-url <RPC_URL> --ffi --account <KEYSTORE_NAME> --broadcast
+
+# Validate upgrade without deploying (useful for CI)
+# Use Upgrades.validateUpgrade("MyContractV2.sol", opts) in a test
+```
+
+### Plugin API Quick Reference
+
+| Function | Purpose |
+|---|---|
+| `Upgrades.deployUUPSProxy(contract, data)` | Deploy UUPS proxy + impl + initialize |
+| `Upgrades.deployTransparentProxy(contract, admin, data)` | Deploy Transparent proxy + impl + initialize |
+| `Upgrades.upgradeProxy(proxy, newContract, data)` | Validate + deploy new impl + upgrade |
+| `Upgrades.validateUpgrade(contract, opts)` | Validate only, no deploy (for CI/tests) |
+| `Upgrades.getImplementationAddress(proxy)` | Get current implementation address |
+| `Upgrades.prepareUpgrade(contract, opts)` | Validate + deploy new impl, return address (for multisig) |
+
+### Key Rules
+
+- **Always use `--ffi` flag** — the plugin needs it for storage layout validation
+- **Always add `--sender <ADDRESS>` for upgrades** — must match proxy owner, otherwise `OwnableUnauthorizedAccount`
+- **Use `Upgrades` in scripts, `UnsafeUpgrades` only in tests** — `UnsafeUpgrades` skips all safety checks
+- **Keep V1 source code in project** when upgrading — plugin needs it for storage comparison. Or use `@custom:oz-upgrades-from` annotation
+- **Never hand-roll proxy deployment** when this plugin is available — the storage layout check alone prevents critical bugs
