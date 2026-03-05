@@ -210,6 +210,46 @@ Old contracts with known bugs remain callable on-chain forever.
 
 **Case**: [Truebit (Jan 2026, $26.4M)](https://www.coindesk.com/markets/2026/01/09/truebit-token-tru-crashes-99-9-after-usd26-6m-exploit-drains-8-535-eth) — Solidity 0.6.10 contract lacked overflow protection, attacker minted tokens at near-zero cost.
 
+## Automated Analysis with Slither MCP (if available)
+
+When `slither` MCP is configured, run automated analysis BEFORE the manual checklist below:
+
+### Recommended Audit Flow
+
+```
+Step 1: slither MCP automated scan
+        → get_detector_results(path, impact="High")
+        → get_detector_results(path, impact="Medium")
+Step 2: Review Slither findings — triage true positives vs false positives
+Step 3: Manual checklist below — catch what Slither misses (business logic, economic attacks)
+Step 4: Cross-reference — Slither + manual findings combined into final report
+```
+
+### Slither MCP Tools
+
+| Tool | Usage | Complements |
+|---|---|---|
+| `get_contract_metadata` | Extract functions, inheritance, flags | Manual access control review |
+| `get_function_source` | Get exact source code with line numbers | Faster than grep for locating code |
+| `find_implementations` | Find all implementations of a function signature | Cross-contract reentrancy analysis |
+| `get_detector_results` | Run 90+ security detectors, filter by impact/confidence | Automated version of manual checklist |
+| `get_detector_metadata` | List available detectors with descriptions | Understanding what's being checked |
+
+### What Slither Catches vs What It Misses
+
+| Slither Catches Well | Manual Review Still Needed |
+|---|---|
+| Reentrancy patterns | Business logic flaws |
+| Unprotected functions | Economic attack vectors (flash loan combos) |
+| Unused state variables | Cross-protocol composability risks |
+| Shadowing issues | Oracle manipulation scenarios |
+| Incorrect ERC20 interface | Trust boundary architecture issues |
+| Dead code | MEV/front-running specific to business logic |
+
+**Key Principle**: Slither provides ground truth via static analysis — reduces false negatives on known vulnerability patterns. But it cannot reason about protocol-level economic attacks — that's where the manual checklist below is essential.
+
+**Graceful degradation**: If slither MCP is not configured, skip this section and proceed directly to the manual checklist. All checklist items remain valid and self-contained.
+
 ## Audit Execution Checklist
 
 When conducting a security audit, check each item:
