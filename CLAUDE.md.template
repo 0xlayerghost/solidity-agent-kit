@@ -6,6 +6,7 @@
 Before writing or modifying any Solidity contract (.sol files), you MUST invoke:
 - /solidity-coding
 - /solidity-security
+- When creating NEW contracts from scratch, prefer using OpenZeppelinContracts MCP tools (solidity-erc20, solidity-erc721, etc.) to generate the base contract, then customize with /solidity-coding rules
 
 Before writing or modifying test files (*.t.sol), you MUST invoke:
 - /solidity-testing
@@ -17,8 +18,10 @@ Before deploying contracts or writing deployment scripts (*.s.sol), you MUST inv
 Before debugging failed on-chain transactions, you MUST invoke:
 - /solidity-debug
 
-Before conducting security audits or code reviews, you MUST invoke:
-- /solidity-audit
+Before conducting security audits or code reviews, you MUST:
+- Run slither MCP analysis on the project first (if available) to get automated findings
+- Then invoke /solidity-audit for manual checklist review
+- Cross-reference both results for comprehensive coverage
 
 Before creating git commits or PRs, you MUST invoke:
 - /git-workflow
@@ -77,7 +80,12 @@ After every `/clear`, you MUST re-invoke:
 
 - **fetch**: Lightweight web fetching, suitable for API docs and static pages
 - **playwright**: Dynamic pages, JS-rendered content, screenshots
+- **OpenZeppelinContracts**: Generate secure smart contracts using OpenZeppelin standards (ERC20/721/1155/Governor/Account/Custom). Output is validated against OZ Contracts Wizard rules — imports, modifiers, security checks are guaranteed correct.
+- **slither**: Static analysis of Solidity projects via Slither engine (90+ detectors). Returns vulnerability findings with exact line numbers, impact levels, and confidence ratings.
 - Prefer fetch first, use playwright only when fetch is insufficient
+- Prefer OpenZeppelinContracts MCP for new contract scaffolding, then customize the output
+- Prefer slither MCP for automated scanning before manual /solidity-audit review
+- If MCP tools are not configured, all skills still work independently — graceful degradation
 
 ## Language
 

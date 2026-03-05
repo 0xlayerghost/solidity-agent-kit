@@ -113,6 +113,21 @@ forge coverage
 # Dry-run deployment to verify no runtime errors
 forge script script/Deploy.s.sol --fork-url $RPC_URL -vvvv
 
-# Static analysis (if slither installed)
+# Static analysis (if slither installed locally)
 slither src/
 ```
+
+### Slither MCP Integration (if available)
+
+When `slither` MCP is configured, prefer it over the CLI for structured analysis:
+
+| Approach | When to Use |
+|---|---|
+| `slither src/` (CLI) | Quick local scan, raw terminal output |
+| slither MCP `get_detector_results` | Structured results with impact/confidence filtering, AI can parse and reason about findings |
+| slither MCP `get_contract_metadata` | Understanding contract structure before reviewing code |
+| slither MCP `get_function_source` | Locating exact function implementations faster than grep |
+
+**Recommended**: Use slither MCP when working with AI agents (results are structured and actionable). Use CLI for quick local checks during development.
+
+**Graceful degradation**: If neither slither MCP nor slither CLI is available, rely on the Pre-Audit Checklist above and `forge test --fuzz-runs 10000` for coverage.

@@ -169,6 +169,29 @@ Will contract need upgrades?
 - **Do NOT** use `require(token.transfer(...))` — use `token.safeTransfer(...)` via `SafeERC20`
 - **Do NOT** use `tx.origin` for auth — use `msg.sender` with `Ownable` / `AccessControl`
 
+## MCP-Assisted Contract Generation (if available)
+
+When `OpenZeppelinContracts` MCP is configured, prefer using it to generate base contracts instead of writing from scratch:
+
+| Contract Type | MCP Tool | When to Use |
+|---|---|---|
+| Fungible token | `solidity-erc20` | Any new ERC20 token contract |
+| NFT | `solidity-erc721` | Any new NFT contract |
+| Multi-token | `solidity-erc1155` | Game items, batch operations |
+| Stablecoin | `solidity-stablecoin` | Stablecoin with ERC20 compliance |
+| Real-world assets | `solidity-rwa` | Asset tokenization |
+| Smart account | `solidity-account` | ERC-4337 account abstraction |
+| Governance | `solidity-governor` | DAO voting and proposals |
+| Custom | `solidity-custom` | Non-standard contracts with OZ patterns |
+
+**Workflow**: MCP generates base → apply this skill's naming/structure rules → customize business logic → apply /solidity-security rules
+
+**Why MCP over manual**: MCP output is validated against the same rule-set as OZ Contracts Wizard — imports, modifiers, security checks are guaranteed correct. Manual coding risks missing imports or using wrong OZ versions.
+
+**When NOT to use MCP**: Heavily custom contracts with non-standard patterns, contracts that don't fit any OZ template, or when you need fine-grained control from line 1.
+
+**Graceful degradation**: If MCP is not configured, fall back to the Library Selection Standards above and write contracts manually following all rules in this skill.
+
 ## Foundry Quick Reference
 
 | Operation | Command |
