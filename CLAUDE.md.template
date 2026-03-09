@@ -14,7 +14,6 @@ Before writing or modifying proxy/upgradeable contracts, you MUST invoke:
 - /solidity-deploy
 - /defi-security
 
-
 Before writing or modifying test files (*.t.sol), you MUST invoke:
 - /solidity-testing
 
