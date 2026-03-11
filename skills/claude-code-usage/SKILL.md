@@ -43,6 +43,91 @@ description: "[AUTO-INVOKE] MUST be invoked at the START of each new coding sess
 - Open-ended requests without constraints: *"Make it better"*
 - Multiple unrelated tasks in one message
 
+## Ambiguity Resolution — When Instructions Are Unclear
+
+When a user instruction is vague, open-ended, or could be interpreted in multiple ways, do NOT guess and proceed. Proactively analyze the instruction and present all possible interpretations for the user to confirm before taking action.
+
+### Trigger Conditions
+
+Activate ambiguity resolution when the instruction matches ANY of these patterns:
+
+| Pattern | Example |
+|---------|---------|
+| No target specified | "优化一下" — optimize what? |
+| Multiple possible scopes | "加个检查" — which function? what kind of check? |
+| Unclear boundary | "改一下权限" — add? remove? which role? |
+| Implicit context | "跟上次一样处理" — what was "last time"? |
+| Conflicting possibilities | "处理一下安全问题" — which vulnerability? what level? |
+
+### Analysis Dimensions
+
+When ambiguity is detected, analyze across these dimensions:
+
+1. **Scope** — Which files / contracts / functions could be affected?
+2. **Action** — What operation is intended? (add / modify / delete / refactor / fix)
+3. **Skill match** — Which skills are relevant? Map each interpretation to applicable /skill
+4. **Impact** — What side effects could each interpretation have?
+5. **Constraints** — Are there implicit boundaries the user might assume?
+
+### Output Format
+
+Present findings as a numbered list:
+
+```
+我检测到你的指令存在多种可能的解读，在开始之前需要确认边界：
+
+**可能的解读：**
+
+1. **[解读A]** — [具体描述]
+   - 涉及：[files / contracts]
+   - 关联 skill：/skill-name
+   - 影响范围：[scope]
+
+2. **[解读B]** — [具体描述]
+   - 涉及：[files / contracts]
+   - 关联 skill：/skill-name
+   - 影响范围：[scope]
+
+**请确认：**
+- 你想要哪个解读？（可多选）
+- 是否有额外的约束条件？
+```
+
+### Example
+
+```
+User: "处理一下这个合约的安全问题"
+
+AI: 我检测到你的指令存在多种可能的解读：
+
+1. **运行 Slither 静态分析** — 用 slither MCP 扫描，修复高危问题
+   - 关联 skill：/solidity-security
+   - 影响范围：仅修复工具检测到的问题
+
+2. **手动安全审计** — 按审计清单逐项检查（重入、权限、输入验证等）
+   - 关联 skill：/solidity-audit
+   - 影响范围：完整审查，可能涉及较多修改
+
+3. **修复已知漏洞** — 你已知有特定安全问题，需要定位并修复
+   - 关联 skill：/solidity-security
+   - 影响范围：仅限特定问题
+
+4. **DeFi 安全加固** — 添加防鲸鱼、防闪电贷等保护机制
+   - 关联 skill：/defi-security
+   - 影响范围：可能改变合约接口
+
+请确认你想要哪个方向？
+```
+
+### Key Rules
+
+| Rule | Why |
+|------|-----|
+| Never guess | Wrong guesses waste more time than one clarification round |
+| Show skill connections | Map each interpretation to relevant /skill so user knows what workflow triggers |
+| Respect confirmation | User says "就按第2个来" → proceed immediately, no further questions |
+| Context-aware skip | If conversation history already disambiguates, skip this process and act directly |
+
 ## Meta-Prompting — When Things Go Wrong
 
 When Claude's response misses the mark, don't just rephrase and retry. Use **Meta-Prompting** (reverse prompting) to let Claude diagnose the gap, then re-ask with complete context.
