@@ -20,6 +20,60 @@ description: "[AUTO-INVOKE] MUST be invoked BEFORE writing or modifying any Soli
 - **Event Indexing**: Only add `indexed` to `address` type parameters — add comment if indexing other types
 - **Special Keywords**: `immutable` / `constant` / `unchecked` / `assembly` must have inline comment explaining why
 
+## Event Design Patterns
+
+### Reason-Annotated Events（原因标注事件）
+
+When an event represents a **conditional/branching outcome** (the same action can happen for different reasons), add a `string reason` parameter to make on-chain data self-documenting:
+
+```solidity
+// GOOD — on-chain data is self-explanatory
+event WithdrawalFailed(address indexed user, uint256 amount, string reason);
+emit WithdrawalFailed(user, amount, "insufficient balance");
+emit WithdrawalFailed(user, amount, "cooldown not expired");
+
+event ProposalRejected(uint256 indexed proposalId, string reason);
+emit ProposalRejected(id, "quorum not reached");
+emit ProposalRejected(id, "voting period ended");
+
+// BAD — must read contract source to understand why
+event WithdrawalFailed(address indexed user, uint256 amount);
+```
+
+**适用场景**：
+- 资金去向分叉：同一笔资金因不同条件流向不同地址
+- 操作被拒绝/降级：用户请求未完全满足，附带原因
+- 状态转换：同一个状态变更可能由不同触发条件引起
+- 管理员操作：记录 why（如 `"security incident"`, `"parameter tuning"`）
+
+**不适用场景**：
+- 事件只有一种触发路径（无分支）→ 不需要 reason
+- 高频事件（每笔 swap/transfer）→ string 消耗额外 gas，用 `uint8 reasonCode` 代替
+
+### Reason 实现方式选择
+
+| 场景 | 方式 | Gas 成本 |
+|------|------|----------|
+| 原因种类少且固定（≤5种） | `string reason` 字面量 | 低（编译器优化短字符串） |
+| 原因种类多或动态 | `uint8 reasonCode` + 前端映射表 | 最低 |
+| 需要附带动态数据 | `string reason` 拼接 | 较高，慎用 |
+
+```solidity
+// 方式 A：string literal（推荐，可读性最好）
+emit WithdrawalFailed(user, amount, "cooldown not expired");
+
+// 方式 B：uint8 code（高频场景省 gas）
+event SwapRejected(address indexed user, uint256 amount, uint8 reasonCode);
+// 0 = slippage, 1 = insufficient liquidity, 2 = paused
+emit SwapRejected(user, amount, 0);
+```
+
+### General Event Design Rules
+
+- 每个改变状态的 `external` / `public` 函数**必须** emit 至少一个事件
+- 事件参数应包含足够信息让前端/indexer **无需额外 RPC 调用**就能重建完整上下文
+- NatSpec `@param` 必须为 reason 参数列出所有可能的值
+
 ## Naming Conventions
 
 | Element | Convention | Example |
