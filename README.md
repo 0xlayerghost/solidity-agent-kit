@@ -1,49 +1,32 @@
 <div align="center">
 
-```
-███████╗ ██████╗ ██╗     ██╗██████╗ ██╗████████╗██╗   ██╗
-██╔════╝██╔═══██╗██║     ██║██╔══██╗██║╚══██╔══╝╚██╗ ██╔╝
-███████╗██║   ██║██║     ██║██║  ██║██║   ██║    ╚████╔╝
-╚════██║██║   ██║██║     ██║██║  ██║██║   ██║     ╚██╔╝
-███████║╚██████╔╝███████╗██║██████╔╝██║   ██║      ██║
-╚══════╝ ╚═════╝ ╚══════╝╚═╝╚═════╝ ╚═╝   ╚═╝      ╚═╝
-
-          █████╗  ██████╗ ███████╗███╗   ██╗████████╗
-         ██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝
-         ███████║██║  ███╗█████╗  ██╔██╗ ██║   ██║
-         ██╔══██║██║   ██║██╔══╝  ██║╚██╗██║   ██║
-         ██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║
-         ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝
-
-              ██╗  ██╗██╗████████╗
-              ██║ ██╔╝██║╚══██╔══╝
-              █████╔╝ ██║   ██║
-              ██╔═██╗ ██║   ██║
-              ██║  ██╗██║   ██║
-              ╚═╝  ╚═╝╚═╝   ╚═╝
-```
+# solidity-agent-kit
 
 **Battle-tested AI agent skills for Solidity smart contract development**
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
-[![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.20-363636?style=for-the-badge&logo=solidity&logoColor=white)](https://soliditylang.org)
-[![Foundry](https://img.shields.io/badge/Foundry-orange?style=for-the-badge&logo=ethereum&logoColor=white)](https://getfoundry.sh)
-[![Skills](https://img.shields.io/badge/skills-9-blueviolet?style=for-the-badge)](https://skills.sh/0xlayerghost/solidity-agent-kit)
-[![Agents](https://img.shields.io/badge/AI%20Agents-8%2B-blue?style=for-the-badge)](#supported-agents)
+*Equip your coding agent with professional-grade Solidity practices — from coding standards to DeFi security.*
 
----
+<br/>
 
-**EVM Chains Supported**
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat&logo=opensourceinitiative&logoColor=white)](https://opensource.org/licenses/MIT)
+[![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.20-363636?style=flat&logo=solidity&logoColor=white)](https://soliditylang.org)
+[![Foundry](https://img.shields.io/badge/built%20with-Foundry-orange?style=flat&logo=ethereum&logoColor=white)](https://getfoundry.sh)
+[![Skills](https://img.shields.io/badge/9%20skills-blueviolet?style=flat&logo=bookstack&logoColor=white)](https://skills.sh/0xlayerghost/solidity-agent-kit)
+[![Agents](https://img.shields.io/badge/8%2B%20agents-informational?style=flat&logo=probot&logoColor=white)](#supported-agents)
 
-[![Ethereum](https://img.shields.io/badge/Ethereum-3C3C3D?style=flat-square&logo=ethereum&logoColor=white)](https://ethereum.org)
-[![Polygon](https://img.shields.io/badge/Polygon-8247E5?style=flat-square&logo=polygon&logoColor=white)](https://polygon.technology)
-[![Arbitrum](https://img.shields.io/badge/Arbitrum-28A0F0?style=flat-square&logo=ethereum&logoColor=white)](https://arbitrum.io)
-[![Optimism](https://img.shields.io/badge/Optimism-FF0420?style=flat-square&logo=ethereum&logoColor=white)](https://optimism.io)
-[![Base](https://img.shields.io/badge/Base-0052FF?style=flat-square&logo=ethereum&logoColor=white)](https://base.org)
-[![Avalanche](https://img.shields.io/badge/Avalanche-E84142?style=flat-square&logo=avalanche&logoColor=white)](https://avax.network)
-[![BNB Chain](https://img.shields.io/badge/BNB%20Chain-F0B90B?style=flat-square&logo=binance&logoColor=white)](https://bnbchain.org)
-[![zkSync](https://img.shields.io/badge/zkSync-1E69FF?style=flat-square&logo=ethereum&logoColor=white)](https://zksync.io)
-[![Linea](https://img.shields.io/badge/Linea-121212?style=flat-square&logo=ethereum&logoColor=white)](https://linea.build)
+<br/>
+
+**EVM Compatible**
+
+[![Ethereum](https://img.shields.io/badge/Ethereum-3C3C3D?style=flat&logo=ethereum&logoColor=white)](https://ethereum.org)
+[![Polygon](https://img.shields.io/badge/Polygon-8247E5?style=flat&logo=polygon&logoColor=white)](https://polygon.technology)
+[![Arbitrum](https://img.shields.io/badge/Arbitrum-28A0F0?style=flat&logo=ethereum&logoColor=white)](https://arbitrum.io)
+[![Optimism](https://img.shields.io/badge/Optimism-FF0420?style=flat&logo=optimism&logoColor=white)](https://optimism.io)
+[![Base](https://img.shields.io/badge/Base-0052FF?style=flat&logo=coinbase&logoColor=white)](https://base.org)
+[![Avalanche](https://img.shields.io/badge/Avalanche-E84142?style=flat&logo=avalanche&logoColor=white)](https://avax.network)
+[![BNB Chain](https://img.shields.io/badge/BNB%20Chain-F0B90B?style=flat&logo=binance&logoColor=black)](https://bnbchain.org)
+[![zkSync](https://img.shields.io/badge/zkSync-1E69FF?style=flat&logo=ethereum&logoColor=white)](https://zksync.io)
+[![Linea](https://img.shields.io/badge/Linea-121212?style=flat&logo=consensys&logoColor=white)](https://linea.build)
 
 </div>
 
@@ -299,8 +282,8 @@ MIT — see [LICENSE](./LICENSE)
 
 *Blockchain & Solidity Engineer*
 
-[![GitHub](https://img.shields.io/badge/GitHub-0xlayerghost-181717?style=for-the-badge&logo=github)](https://github.com/0xlayerghost)
-[![skills.sh](https://img.shields.io/badge/skills.sh-profile-blue?style=for-the-badge)](https://skills.sh/0xlayerghost)
+[![GitHub](https://img.shields.io/badge/GitHub-0xlayerghost-181717?style=flat&logo=github)](https://github.com/0xlayerghost)
+[![skills.sh](https://img.shields.io/badge/skills.sh-profile-blue?style=flat&logo=bookstack&logoColor=white)](https://skills.sh/0xlayerghost)
 
 *If this helped you ship safer contracts, give it a ⭐*
 
