@@ -1,5 +1,12 @@
 # solidity-agent-kit
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Skills](https://img.shields.io/badge/skills-9-blue)](https://skills.sh/0xlayerghost/solidity-agent-kit)
+[![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.20-363636?logo=solidity&logoColor=white)](https://soliditylang.org)
+[![Foundry](https://img.shields.io/badge/built%20with-Foundry-orange?logo=ethereum&logoColor=white)](https://getfoundry.sh)
+[![Agents](https://img.shields.io/badge/agents-8%2B-blueviolet)](#supported-agents)
+[![GitHub Stars](https://img.shields.io/github/stars/0xlayerghost/solidity-agent-kit?style=social)](https://github.com/0xlayerghost/solidity-agent-kit)
+
 A comprehensive agent skills toolkit for Solidity smart contract development with Foundry.
 
 > Equip your AI coding agent with battle-tested Solidity development practices — from coding standards to DeFi security.
