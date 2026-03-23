@@ -1,10 +1,10 @@
 # solidity-agent-kit
 
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
-[![Solidity](https://img.shields.io/badge/Solidity-0.8.20-363636?style=for-the-badge&logo=solidity&logoColor=white)](https://soliditylang.org)
-[![Foundry](https://img.shields.io/badge/Built_With-Foundry-orange?style=for-the-badge&logo=ethereum&logoColor=white)](https://getfoundry.sh)
-[![Skills](https://img.shields.io/badge/Skills-9-blue?style=for-the-badge)](https://skills.sh/0xlayerghost/solidity-agent-kit)
-[![Agents](https://img.shields.io/badge/AI_Agents-8%2B-blueviolet?style=for-the-badge)](#supported-agents)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Skills](https://img.shields.io/badge/skills-9-blue)](https://skills.sh/0xlayerghost/solidity-agent-kit)
+[![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.20-363636?logo=solidity&logoColor=white)](https://soliditylang.org)
+[![Foundry](https://img.shields.io/badge/built%20with-Foundry-orange?logo=ethereum&logoColor=white)](https://getfoundry.sh)
+[![Agents](https://img.shields.io/badge/agents-8%2B-blueviolet)](#supported-agents)
 
 A comprehensive agent skills toolkit for Solidity smart contract development with Foundry.
 
