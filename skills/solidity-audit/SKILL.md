@@ -174,9 +174,33 @@ description: "Security audit and code review checklist. Covers 30+ vulnerability
 
 **Case**: [Code4rena 2024-08-phi H-06](https://code4rena.com/reports/2024-08-phi) (via [EVMbench Paper Appendix H.1, p.25-28](https://cdn.openai.com/evmbench/evmbench.pdf)) — `_createCredInternal` called `buyShareCred` before incrementing `credIdCounter`; `_handleTrade` refunded excess ETH before updating `lastTradeTimestamp`. Attacker reentered to accumulate shares on cheap curve, overwrote metadata to expensive curve, sold to drain all contract ETH. Fix: add `nonReentrant` to `buyShareCred`/`sellShareCred`.
 
+### 15. Per-Address State Bypass
+
+> Any restriction based on `mapping(address => ...)` can be circumvented by multi-address splitting or intermediate transfer.
+
+| Restriction Type | Bypass Method | Defense |
+|---|---|---|
+| Cooldown (`_lastTxTime[addr]`) | A buys → transfers to B → B sells immediately | Inherit sender's cooldown on transfer: `_lastTxTime[to] = _lastTxTime[from]` |
+| Max tx amount (`maxTxAmount`) | Split across N addresses, each within limit | Also limit by `tx.origin` per block, or accept as known tradeoff |
+| Max wallet balance (`maxWalletBalance`) | Distribute tokens to multiple wallets controlled by same entity | Inherently hard to enforce on-chain; monitor off-chain |
+| Same-block protection (`_lastTxBlock[addr]`) | Use different addresses in same block | Inherit sender's block: `_lastTxBlock[to] = _lastTxBlock[from]` |
+| Trade count limit | Rotate addresses, each uses one trade | Same as cooldown — propagate state on transfer |
+
+**Audit Methodology (3 Steps)**:
+
+1. **Identify all per-address state**: Search `mapping(address =>` — for each, ask: "Can this be bypassed by switching addresses?"
+2. **Trace all token flow paths**: Map every path tokens can move (buy, sell, transfer, mint). Check if each path updates the restriction state. The **wallet-to-wallet transfer path** is the most commonly overlooked.
+3. **Check state transitivity**: If A has restriction state and transfers tokens to B, does B inherit that state? If not, it's a bypass vulnerability.
+
+**Defense Principle**: Token flow carries restriction state — wherever tokens go, the relevant per-address state must follow.
+
+**Two Common Pitfalls**:
+- **Griefing via `block.timestamp`**: Using `_lastTxTime[to] = block.timestamp` allows anyone to grief a target by sending dust tokens, resetting cooldown. Use sender's state instead.
+- **Overwrite via direct assignment**: Using `_lastTxTime[to] = _lastTxTime[from]` allows a near-expired sender to shorten receiver's existing cooldown. Use `max`: `if (_lastTxTime[from] > _lastTxTime[to]) _lastTxTime[to] = _lastTxTime[from]` — only extends, never shortens.
+
 ## Infrastructure-Level Vulnerabilities
 
-### 15. Frontend / UI Injection
+### 16. Frontend / UI Injection
 
 Attackers inject malicious code into the dApp frontend or signing interface.
 
@@ -184,7 +208,7 @@ Attackers inject malicious code into the dApp frontend or signing interface.
 
 **Case**: [Bybit (Feb 2025, $1.4B)](https://www.nccgroup.com/research-blog/in-depth-technical-analysis-of-the-bybit-hack/) — malicious JavaScript injected into Safe{Wallet} UI, tampered with transaction data during signing.
 
-### 16. Private Key & Social Engineering
+### 17. Private Key & Social Engineering
 
 Compromised keys remain the #1 loss source in 2025-2026.
 
@@ -192,7 +216,7 @@ Compromised keys remain the #1 loss source in 2025-2026.
 
 **Case**: [Step Finance (Jan 2026, $30M)](https://www.halborn.com/blog/post/explained-the-step-finance-hack-january-2026) — treasury wallet private keys compromised via device breach.
 
-### 17. Cross-Chain Bridge
+### 18. Cross-Chain Bridge
 
 | Check | Detail |
 |-------|--------|
@@ -202,7 +226,7 @@ Compromised keys remain the #1 loss source in 2025-2026.
 
 **Case**: [SagaEVM (Jan 2026, $7M)](https://www.theblock.co/post/386638/sagaevm-suffers-exploit) — inherited vulnerable EVM precompile bridge logic from Ethermint.
 
-### 18. Legacy / Deprecated Contracts
+### 19. Legacy / Deprecated Contracts
 
 Old contracts with known bugs remain callable on-chain forever.
 
@@ -309,6 +333,11 @@ When conducting a security audit, check each item:
 - [ ] Counter/ID increments complete before external calls — [EVMbench/phi H-06]
 - [ ] ETH refunds execute after all state updates — [EVMbench/phi H-06]
 - [ ] Auto-operations in create functions (auto-buy etc.) execute after full initialization — [EVMbench/phi H-06]
+
+**Per-Address State Bypass:**
+- [ ] All `mapping(address => ...)` restrictions audited for multi-address bypass
+- [ ] Wallet-to-wallet transfer path propagates relevant restriction state
+- [ ] State propagation uses `max(_lastTxTime[to], _lastTxTime[from])` — not `block.timestamp` (griefing) or direct assignment (overwrite shortening)
 
 **Infrastructure:**
 - [ ] Third-party dependencies audited (bridge code, inherited contracts)
