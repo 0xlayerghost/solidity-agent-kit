@@ -21,6 +21,9 @@ Before deploying contracts or writing deployment scripts (*.s.sol), you MUST inv
 - /solidity-deploy
 - /defi-security
 
+Before any on-chain operation (cast send, forge script --broadcast), you MUST invoke:
+- /solidity-checklist
+
 Before debugging failed on-chain transactions, you MUST invoke:
 - /solidity-debug
 

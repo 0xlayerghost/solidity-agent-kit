@@ -11,7 +11,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat&logo=opensourceinitiative&logoColor=white)](https://opensource.org/licenses/MIT)
 [![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.20-363636?style=flat&logo=solidity&logoColor=white)](https://soliditylang.org)
 [![Foundry](https://img.shields.io/badge/built%20with-Foundry-orange?style=flat&logo=ethereum&logoColor=white)](https://getfoundry.sh)
-[![Skills](https://img.shields.io/badge/9%20skills-blueviolet?style=flat&logo=bookstack&logoColor=white)](https://skills.sh/0xlayerghost/solidity-agent-kit)
+[![Skills](https://img.shields.io/badge/10%20skills-blueviolet?style=flat&logo=bookstack&logoColor=white)](https://skills.sh/0xlayerghost/solidity-agent-kit)
 [![Agents](https://img.shields.io/badge/8%2B%20agents-informational?style=flat&logo=probot&logoColor=white)](#supported-agents)
 
 <br/>
@@ -130,11 +130,12 @@ npx skills remove 0xlayerghost/solidity-agent-kit
 | 2 | **solidity-security** | Writing / editing any contract | Private key protection, access control, reentrancy guards, gas limits | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-security) |
 | 3 | **solidity-testing** | Writing / editing `*.t.sol` | Test layout, coverage ≥90%, fuzz testing, invariant tests with Foundry | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-testing) |
 | 4 | **solidity-deploy** | Writing `*.s.sol` / deploying | Pre-deploy checklist, env vars, constructor args, post-deploy workflow | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-deploy) |
-| 5 | **solidity-debug** | Debugging failed txs | Cast calldata decoding, revert analysis, gas diagnosis, trace reading | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-debug) |
-| 6 | **solidity-audit** | Security reviews | Manual audit checklist: storage, access control, arithmetic, ERC compatibility | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-audit) |
-| 7 | **defi-security** | DeFi protocol work | Anti-whale, anti-flash-loan, launch checklist, emergency pause, MEV defense | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/defi-security) |
-| 8 | **git-workflow** | Before commits / PRs | Conventional commits, branch naming, PR templates for Solidity projects | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/git-workflow) |
-| 9 | **claude-code-usage** | After every `/clear` | Context recovery, subagent strategy, Plan Mode, TodoWrite patterns | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/claude-code-usage) |
+| 5 | **solidity-checklist** | Before any on-chain op (`cast send`, `--broadcast`) | 6-layer verification: permissions, dependencies, params, security, testing, knowledge capture | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-checklist) |
+| 6 | **solidity-debug** | Debugging failed txs | Cast calldata decoding, revert analysis, gas diagnosis, trace reading | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-debug) |
+| 7 | **solidity-audit** | Security reviews | Manual audit checklist: storage, access control, arithmetic, ERC compatibility | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/solidity-audit) |
+| 8 | **defi-security** | DeFi protocol work | Anti-whale, anti-flash-loan, launch checklist, emergency pause, MEV defense | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/defi-security) |
+| 9 | **git-workflow** | Before commits / PRs | Conventional commits, branch naming, PR templates for Solidity projects | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/git-workflow) |
+| 10 | **claude-code-usage** | After every `/clear` | Context recovery, subagent strategy, Plan Mode, TodoWrite patterns | [View](https://skills.sh/0xlayerghost/solidity-agent-kit/claude-code-usage) |
 
 ---
 
@@ -173,6 +174,7 @@ Your Project
                 ├── solidity-coding/    ──► Enforces code style & NatSpec
                 ├── solidity-security/  ──► Guards access control & reentrancy
                 ├── solidity-testing/   ──► Fuzz + invariant test coverage
+                ├── solidity-checklist/ ──► 6-layer on-chain op verification
                 ├── solidity-deploy/    ──► Pre/post deploy checklist
                 ├── solidity-debug/     ──► Cast-based tx analysis
                 ├── solidity-audit/     ──► Manual security review
@@ -240,6 +242,8 @@ solidity-agent-kit/
 │   ├── solidity-security/          ← Security best practices
 │   │   └── SKILL.md
 │   ├── solidity-testing/           ← Test organization & coverage
+│   │   └── SKILL.md
+│   ├── solidity-checklist/         ← 6-layer checklist for on-chain ops
 │   │   └── SKILL.md
 │   ├── solidity-deploy/            ← Deployment workflow & checks
 │   │   └── SKILL.md
