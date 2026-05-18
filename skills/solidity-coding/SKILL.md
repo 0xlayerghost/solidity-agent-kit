@@ -20,6 +20,47 @@ description: "[AUTO-INVOKE] MUST be invoked BEFORE writing or modifying any Soli
 - **Event Indexing**: Only add `indexed` to `address` type parameters — add comment if indexing other types
 - **Special Keywords**: `immutable` / `constant` / `unchecked` / `assembly` must have inline comment explaining why
 
+## Initialization Strategy
+
+When a contract involves state initialization (external addresses, business parameters, role assignments), **DO NOT default to any single approach**. Follow this workflow:
+
+### Workflow
+
+1. **Evaluate**: Is the contract upgradeable? Are all dependencies known at deploy time? Are there cross-contract deployment order constraints?
+2. **Present options**: Show the developer the three initialization schemes below with their trade-offs
+3. **Let the developer choose**: Do not assume a scheme — different projects and contracts have different needs
+4. **Implement**: Apply the chosen scheme with the safety rules listed below
+
+### Scheme Comparison
+
+| | Scheme A: Constructor Only | Scheme B: Initializer Only | Scheme C: Hybrid |
+|---|---|---|---|
+| **Approach** | All init in constructor params | Deploy empty, call `initialize()` after | Constructor handles known params; `initialize()` handles post-deploy dependencies |
+| **Atomicity** | Deploy fails = nothing exists, no dangerous half-init state | Risk of "deployed but not initialized" window | Partially atomic — constructor part is safe, initializer part has the window |
+| **Front-run risk** | None — constructor cannot be front-run | `initialize()` can be front-run if unprotected | Only the initializer portion has risk |
+| **Gas** | One tx for deploy + init | Deploy tx + N init txs | Deploy tx + 1 init tx |
+| **Flexibility** | Low — all params must be known at deploy time | High — can set dependencies after other contracts deploy | Medium — split between deploy-time and post-deploy |
+| **Upgradeable** | Not compatible with proxy patterns | Required for UUPS / Transparent Proxy | Partial — constructor sets proxy-safe params, initializer for the rest |
+
+### When to Suggest Each Scheme
+
+| Scenario | Suggested Scheme |
+|----------|-----------------|
+| Non-upgradeable, all dependencies known at deploy | A |
+| Upgradeable contract (UUPS / Transparent Proxy) | B |
+| Non-upgradeable, but some dependencies deploy later (e.g., LP pair created after token deploy) | C |
+| Multi-contract system with circular references | C |
+| Simple utility / library-style contract | A |
+| Contract needs post-deploy configuration by multisig / DAO | B or C |
+
+### Safety Rules (Apply Regardless of Scheme)
+
+- **One-shot lock**: Any setter that should only be called once must enforce `require(currentValue == address(0))` or a `bool initialized` flag — prevent re-initialization
+- **No unprotected initializers**: `initialize()` functions must have access control (`onlyOwner`, `initializer` modifier, or deployer-only check)
+- **Immutable preference**: Values known at deploy time should use `immutable` over regular storage — saves gas on every read
+- **No complex external calls in constructor**: Constructor should not call external contracts for state-changing operations (swap, addLiquidity) — the contract is not fully constructed yet
+- **Deploy script responsibility**: When using Scheme C, the deploy script must call `initialize()` in the same transaction batch or immediately after — document the required call sequence
+
 ## Event Design Patterns
 
 ### Reason-Annotated Events（原因标注事件）
