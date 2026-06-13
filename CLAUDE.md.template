@@ -71,6 +71,12 @@ After every `/clear`, you MUST re-invoke:
 - Break down plans before starting, mark completed immediately after finishing
 - Only one task should be in_progress at any time
 
+## Security Restrictions
+
+- **NEVER read, open, or access `.env` files** — no AI agent is allowed to view `.env` under any circumstances
+- Only `.env.example` may be read to understand environment variable structure
+- If a user asks to check `.env`, remind them of this rule and offer to read `.env.example` instead
+
 ## Core Principles
 
 ### Simplicity First
@@ -84,6 +90,20 @@ After every `/clear`, you MUST re-invoke:
 ### Minimal Impact
 - Only change what must be changed, do not refactor surrounding code
 - Do not add unnecessary comments, type annotations, or documentation
+
+## Supported Chains
+
+### Pharos Network
+- **Type**: EVM-compatible Layer 1 (fully compatible)
+- **Website**: https://www.pharos.xyz
+- **Docs**: https://docs.pharos.xyz
+- **Features**: 30,000+ TPS, 1s finality, dual VM (EVM + WASM), parallel execution
+- **Token**: $PHRS (native gas token)
+- **Dev notes**:
+  - Standard Solidity contracts deploy without modification
+  - All EVM tooling works (Foundry, Hardhat, MetaMask, etc.)
+  - Gas costs significantly lower than Ethereum
+  - When deploying to Pharos, use the Pharos RPC in `foundry.toml` or deployment scripts
 
 ## MCP Tools
 

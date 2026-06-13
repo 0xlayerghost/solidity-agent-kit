@@ -27,6 +27,7 @@
 [![BNB Chain](https://img.shields.io/badge/BNB%20Chain-F0B90B?style=flat&logo=binance&logoColor=black)](https://bnbchain.org)
 [![zkSync](https://img.shields.io/badge/zkSync-1E69FF?style=flat&logo=ethereum&logoColor=white)](https://zksync.io)
 [![Linea](https://img.shields.io/badge/Linea-121212?style=flat&logo=consensys&logoColor=white)](https://linea.build)
+[![Pharos](https://img.shields.io/badge/Pharos-00D4AA?style=flat&logo=ethereum&logoColor=white)](https://www.pharos.xyz)
 
 </div>
 
@@ -155,6 +156,7 @@ Avalanche C-Chain             Fuji
 BNB Smart Chain               BSC Testnet
 zkSync Era                    zkSync Sepolia
 Linea                         Linea Sepolia
+Pharos Network                Pharos Testnet
 ```
 
 Chain-specific `foundry.toml` configuration, RPC URL management, and `cast` commands are all covered in the deploy and debug skills.
