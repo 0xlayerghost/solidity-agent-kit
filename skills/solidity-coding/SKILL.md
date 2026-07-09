@@ -128,6 +128,7 @@ emit SwapRejected(user, amount, 0);
 | Function parameter | prefix `_` for setter | `function setFee(uint256 _fee)` |
 
 - **Forbidden**: Pinyin names, single-letter variables (except `i/j/k` in loops), excessive abbreviations
+- **Return value naming**: When a return variable name conflicts with a state variable, use a semantic prefix (`is` / `can` / `has` / `current` / `total`) instead of appending `_` — keeps ABI clean for frontend consumers
 
 ## Code Organization Rules
 
