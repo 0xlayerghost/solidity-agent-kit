@@ -85,6 +85,9 @@ Auto-detects all AI agents on your machine and installs for each one. Creates `.
 # Claude Code
 npx skills add 0xlayerghost/solidity-agent-kit -y --agent claude-code
 
+# Codex CLI
+npx skills add 0xlayerghost/solidity-agent-kit -y --agent codex
+
 # Cursor
 npx skills add 0xlayerghost/solidity-agent-kit -y --agent cursor
 
