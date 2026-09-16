@@ -140,6 +140,12 @@ emit SwapRejected(user, amount, 0);
 | Complex multi-step operations | Use Foundry script (*.s.sol) |
 | Import style | Use named imports: `import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";` |
 
+### Complex Function Refactoring
+
+When a function coordinates multiple business stages, mixes validation with several state changes or external calls, or approaches compiler stack limits, read [references/complex-function-refactoring.md](references/complex-function-refactoring.md) before modifying it.
+
+Do not split small functions merely to increase function count. Preserve the external ABI, execution order, revert behavior, state-transition ordering, emitted events, and fund-flow invariants unless the user explicitly requests a behavioral change.
+
 ## Project Directory Structure
 
 ```

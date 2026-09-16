@@ -243,7 +243,9 @@ solidity-agent-kit/
 ├── CLAUDE.md.template              ← Copy to project root as CLAUDE.md
 ├── skills/
 │   ├── solidity-coding/            ← Coding standards & naming conventions
-│   │   └── SKILL.md
+│   │   ├── SKILL.md
+│   │   └── references/
+│   │       └── complex-function-refactoring.md
 │   ├── solidity-security/          ← Security best practices
 │   │   └── SKILL.md
 │   ├── solidity-testing/           ← Test organization & coverage
