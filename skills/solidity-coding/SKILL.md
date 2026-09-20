@@ -136,9 +136,18 @@ emit SwapRejected(user, amount, 0);
 |-----------|------|
 | Cross-contract constants | Place in `src/common/Const.sol` |
 | Interface definitions | Place in `src/interfaces/I<Name>.sol`, separate from implementation |
+| Shared stateful behavior | Place in `src/abstract/<Name>.sol` and inherit it instead of copying the implementation |
 | Simple on-chain queries | Use Foundry cast CLI (call / send) |
 | Complex multi-step operations | Use Foundry script (*.s.sol) |
 | Import style | Use named imports: `import {Ownable} from "@openzeppelin/contracts/access/Ownable.sol";` |
+
+### Shared Administrative Functions
+
+When the same administrative operation is needed by multiple contracts, keep one canonical function name, parameter order, event, errors, NatSpec, and implementation. Search the repository before adding a new variant.
+
+Use a shared abstract contract for stateful behavior or modifiers, an interface when external consumers need a stable ABI, and a library only for stateless logic. Business contracts MUST inherit the shared implementation instead of copying it.
+
+For the project's canonical owner-controlled asset recovery function and inheritance rules, read [references/shared-contract-behaviors.md](references/shared-contract-behaviors.md). The project policy intentionally treats the owner as the highest authority and permits recovery of every ERC20 token and native currency held by the contract.
 
 ### Complex Function Refactoring
 
@@ -151,6 +160,7 @@ Do not split small functions merely to increase function count. Preserve the ext
 ```
 src/              — Contract source code
   interfaces/     — Interface definitions (I*.sol)
+  abstract/       — Shared stateful base contracts (AssetRescue.sol, etc.)
   common/         — Shared constants, types, errors (Const.sol, Types.sol)
 test/             — Test files (*.t.sol)
 script/           — Deployment & interaction scripts (*.s.sol)
@@ -181,7 +191,18 @@ When writing Solidity contracts, prioritize using battle-tested OpenZeppelin lib
 | Need to enumerate role members | `AccessControlEnumerable` | `@openzeppelin/contracts/access/AccessControlEnumerable.sol` |
 | Governance with timelock delay | `TimelockController` | `@openzeppelin/contracts/governance/TimelockController.sol` |
 
-**Rule**: Single owner → `Ownable2Step`; 2+ roles → `AccessControl`; governance/DAO → `TimelockController`
+#### Ownership Model Selection
+
+For a single-owner contract, the developer MUST choose the ownership model before code generation:
+
+| Choice | Behavior | Use When |
+|--------|----------|----------|
+| `Ownable` | Ownership transfer completes in one transaction | Simplicity and immediate transfer are explicitly preferred |
+| `Ownable2Step` | New owner must call `acceptOwnership()` | Protection against transferring ownership to the wrong address is preferred |
+
+Do not silently force `Ownable2Step`. If the project has no recorded choice, present both options and let the developer choose. Once selected, use that model consistently across the project, including shared base contracts, deployment scripts, tests, and ownership-transfer commands. Generate the selected inheritance and imports from the start; do not generate `Ownable2Step` and leave the developer to replace it manually.
+
+**Rule**: 1 role → developer chooses `Ownable` or `Ownable2Step`; 2+ roles → `AccessControl`; governance/DAO → `TimelockController`
 
 ### Security Protection
 
@@ -248,7 +269,7 @@ Does contract handle user funds/tokens?
 └── NO  → Skip
 
 How many admin roles needed?
-├── 1 role  → Ownable2Step
+├── 1 role  → Ask developer to choose Ownable or Ownable2Step
 ├── 2+ roles → AccessControl
 └── DAO/governance → TimelockController
 
