@@ -145,20 +145,26 @@ Scan for common security risks before execution.
 | Access control | Does the function restrict callers appropriately? | Missing `onlyOwner` / `onlyRole` on sensitive function |
 | Value handling | Does the function handle msg.value correctly? | Accepts ETH but doesn't use it, or vice versa |
 | Approval amount | Am I approving more than necessary? | `approve(spender, type(uint256).max)` on unknown contract |
-| Private key exposure | Am I using keystore, not raw private key? | `--private-key` flag in command |
+| Private key exposure | Did the developer choose keystore or a gitignored `.env`? | Literal private key in a command, script, log, or committed file |
 
 ### Private Key Rule (MANDATORY)
 
 ```bash
-# NEVER do this
+# NEVER put a literal private key in the command
 cast send ... --private-key 0xdead...
 
-# ALWAYS do this
+# Option A: Foundry Keystore (recommended)
 cast send ... --account <KEYSTORE_NAME>
 
 # Set up keystore if not done
 cast wallet import <NAME> --interactive
+
+# Option B: load PRIVATE_KEY from a gitignored .env
+source .env
+cast send ... --private-key "$PRIVATE_KEY"
 ```
+
+Let the developer choose Option A or Option B before execution. Never read, print, or commit `.env`.
 
 ### Decision Rule
 
@@ -167,7 +173,7 @@ cast wallet import <NAME> --interactive
 | No red flags | Proceed to Layer 5 |
 | Reentrancy risk found | Add ReentrancyGuard or fix CEI pattern before proceeding |
 | Front-running risk | Add slippage/deadline params |
-| Private key exposed | STOP — rotate the key, use keystore |
+| Private key exposed | STOP — rotate the key, then use keystore or a gitignored `.env` |
 
 ---
 
@@ -213,15 +219,28 @@ Execute the operation, verify success, and capture knowledge.
 ### Execute
 
 ```bash
-# Send transaction using keystore
+# Option A: send transaction using Foundry Keystore (recommended)
 cast send <CONTRACT> "functionName(type1,type2)" <arg1> <arg2> \
   --account <KEYSTORE_NAME> \
   --rpc-url <RPC>
 
-# Deploy using forge script
+# Option A: deploy using Foundry Keystore
 forge script <Script> \
   --rpc-url <RPC> \
   --account <KEYSTORE_NAME> \
+  --broadcast \
+  --gas-limit <LIMIT> \
+  -vvvv
+
+# Option B: load PRIVATE_KEY from a gitignored .env, then send or deploy
+source .env
+cast send <CONTRACT> "functionName(type1,type2)" <arg1> <arg2> \
+  --private-key "$PRIVATE_KEY" \
+  --rpc-url <RPC>
+
+forge script <Script> \
+  --rpc-url <RPC> \
+  --private-key "$PRIVATE_KEY" \
   --broadcast \
   --gas-limit <LIMIT> \
   -vvvv

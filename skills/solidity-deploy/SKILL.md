@@ -42,7 +42,10 @@ description: "[AUTO-INVOKE] MUST be invoked BEFORE deploying contracts or writin
 
 ## Key Security Rule
 
-- **Never pass private keys directly in commands.** Use Foundry Keystore (`cast wallet import`) to manage keys securely.
+- Before broadcasting, let the developer choose the signing method:
+  - **Foundry Keystore (recommended):** use `--account <KEYSTORE_NAME>`.
+  - **Environment file:** keep `PRIVATE_KEY` in a gitignored `.env`, run `source .env`, then use `--private-key "$PRIVATE_KEY"`.
+- **Never put a literal private key in a command, script, log, conversation, or committed file.** Never read or print the developer's `.env`.
 - **Never include `--broadcast` in templates.** The user must explicitly add it when ready to deploy.
 
 ## Command Templates
@@ -54,8 +57,9 @@ forge script script/Deploy.s.sol:DeployScript \
   --gas-limit 5000000 \
   -vvvv
 
-# When user is ready to deploy, instruct them to add:
-#   --account <KEYSTORE_NAME> --broadcast
+# When the developer is ready to deploy, ask them to choose one signer:
+#   Keystore (recommended): add --account <KEYSTORE_NAME> --broadcast
+#   .env: source .env, then add --private-key "$PRIVATE_KEY" --broadcast
 
 # Verify existing contract separately
 forge verify-contract <ADDRESS> <CONTRACT> \
@@ -156,14 +160,22 @@ contract MyContractV2 is Initializable, OwnableUpgradeable, UUPSUpgradeable {
 # Deploy proxy (dry-run) — --ffi is required for storage layout checks
 forge script script/Deploy.s.sol --rpc-url <RPC_URL> --ffi -vvvv
 
-# Deploy proxy (broadcast)
+# Deploy proxy (broadcast) with Foundry Keystore
 forge script script/Deploy.s.sol --rpc-url <RPC_URL> --ffi --account <KEYSTORE_NAME> --broadcast
+
+# Or deploy with PRIVATE_KEY from a gitignored .env
+source .env
+forge script script/Deploy.s.sol --rpc-url <RPC_URL> --ffi --private-key "$PRIVATE_KEY" --broadcast
 
 # Upgrade proxy (dry-run)
 PROXY_ADDRESS=0x... forge script script/Upgrade.s.sol --rpc-url <RPC_URL> --ffi -vvvv
 
-# Upgrade proxy (broadcast)
+# Upgrade proxy (broadcast) with Foundry Keystore
 PROXY_ADDRESS=0x... forge script script/Upgrade.s.sol --rpc-url <RPC_URL> --ffi --account <KEYSTORE_NAME> --broadcast
+
+# Or upgrade with PRIVATE_KEY from a gitignored .env
+source .env
+PROXY_ADDRESS=0x... forge script script/Upgrade.s.sol --rpc-url <RPC_URL> --ffi --private-key "$PRIVATE_KEY" --broadcast
 
 # Validate upgrade without deploying (useful for CI)
 # Use Upgrades.validateUpgrade("MyContractV2.sol", opts) in a test

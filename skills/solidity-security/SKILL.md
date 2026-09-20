@@ -11,10 +11,13 @@ description: "[AUTO-INVOKE] MUST be invoked BEFORE writing or modifying any Soli
 
 ## Private Key Protection
 
-- Store private keys in `.env`, load via `source .env` — never pass keys as CLI arguments
+- Before an on-chain write, let the developer choose a signing method:
+  - **Foundry Keystore (recommended):** import with `cast wallet import <NAME> --interactive` and use `--account <NAME>`.
+  - **Environment file:** store `PRIVATE_KEY` in `.env`, load it with `source .env`, and reference `"$PRIVATE_KEY"`; never paste the literal value into a command.
 - Never expose private keys in logs, screenshots, conversations, or commits
 - Provide `.env.example` with placeholder values for team reference
 - Add `.env` to `.gitignore` — verify with `git status` before every commit
+- Never read or print a developer's `.env`; only provide commands for the developer to run
 
 ## Security Decision Rules
 
